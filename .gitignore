@@ -53,3 +53,4 @@ venv/
 logs/
 .vscode/
 .coverage
+creds.json
