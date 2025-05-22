@@ -1,10 +1,11 @@
-from typing import Dict,List
+from typing import Dict, List
 from groq import Groq
+from pydantic import BaseModel
 from libs.utils.common.custom_logger import CustomLogger
 from libs.PPTMaker.platform.modules.bot.src.config.groq_config import (
     MODEL_NAME,
     MAX_TOKENS,
-    GROQ_API_KEY
+    GROQ_API_KEY,
 )
 
 log = CustomLogger("GroqLLMService", is_request=False)
@@ -23,11 +24,16 @@ class LLMService:
     def build_user_message(message):
         return {"role": "user", "content": message}
 
-    def call_llm(self, messages:List[Dict[str,str]]):
+    def call_llm(self, messages: List[Dict[str, str]], response_format=None):
         response = self.client.chat.completions.create(
-            messages=messages, model=self.model, max_tokens=self.max_tokens
+            messages=messages,
+            model=self.model,
+            max_tokens=self.max_tokens,
+            response_format=response_format,
         )
-        return response.choices[0].message.content
+        response_content=response.choices[0].message.content
+        logger.info(f"LLM response {response_content}")
+        return response_content
 
 
 def main():
