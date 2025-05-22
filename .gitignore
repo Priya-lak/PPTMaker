@@ -52,5 +52,6 @@ venv/
 .env
 logs/
 .vscode/
+output/
 .coverage
 creds.json

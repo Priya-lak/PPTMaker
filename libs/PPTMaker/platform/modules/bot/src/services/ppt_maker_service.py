@@ -1,1139 +1,420 @@
 import json
-import logging
 from typing import List, Dict, Any, Tuple, Optional
 import uuid
+from pptx import Presentation
 
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from google.oauth2.service_account import Credentials
 from libs.utils.common.custom_logger import CustomLogger
-from libs.utils.common.file_helpers.helpers import read_json_file
 
 log = CustomLogger("GroqLLMService", is_request=False)
 
 logger, listener = log.get_logger()
 
 listener.start()
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.enum.text import PP_ALIGN
+from pptx.dml.color import RGBColor
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.chart.data import CategoryChartData
+from pptx.enum.chart import XL_CHART_TYPE
+import os
 
 
-class PresentationMaker():
+class PPTXGenerator:
     def __init__(self):
-        self.credentials = Credentials.from_service_account_info(
-            read_json_file("creds.json"),
-            scopes=[
-                "https://www.googleapis.com/auth/presentations",
-                "https://www.googleapis.com/auth/drive",
-            ],
-        )
-        self.slide_service = None
-        self.drive_service = None
-        self._initialize_services()
-
-    def _initialize_services(self):
-        """Initialize Google API services."""
-        try:
-            self.slide_service = build("slides", "v1", credentials=self.credentials)
-            self.drive_service = build("drive", "v3", credentials=self.credentials)
-            logger.info("Google API services initialized successfully")
-        except Exception as e:
-            logger.error(f"Error initializing Google API services: {e}")
-            raise
-
-    def create_presentation(self, title):
-        """
-        Creates a new presentation.
-
-        Args:
-            title (str): The title of the presentation
-
-        Returns:
-            dict: The presentation object with ID and other details
-        """
-        try:
-            logger.info(f"Creating presentation: '{title}'")
-            body = {"title": title}
-            presentation = (
-                self.slide_service.presentations().create(body=body).execute()
-            )
-            presentation_id = presentation.get("presentationId")
-            logger.info(f"Created presentation with ID: {presentation_id}")
-            return presentation
-        except HttpError as api_error:
-            logger.error(f"Google API error: {api_error}")
-            logger.error(f"Response status: {api_error.resp.status}")
-            logger.error(f"Response content: {api_error.content}")
-            return None
-        except Exception as error:
-            logger.error(
-                f"Unexpected error creating presentation: {error}", exc_info=True
-            )
-            return None
-
-    def share_presentation(self, email, presentation_id):
-        """
-        Shares the presentation with the specified email address.
-
-        Args:
-            email (str): The email address to share with
-            presentation_id (str): The ID of the presentation to share
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            logger.info(f"Sharing presentation {presentation_id} with {email}")
-
-            # Create permission
-            user_permission = {
-                "type": "user",
-                "role": "writer",  # Can be 'reader', 'writer', 'commenter'
-                "emailAddress": email,
-            }
-
-            # Add the permission to the file
-            self.drive_service.permissions().create(
-                fileId=presentation_id,
-                body=user_permission,
-                fields="id",
-                sendNotificationEmail=True,
-            ).execute()
-
-            logger.info(f"Successfully shared presentation with {email}")
-            return True
-        except HttpError as error:
-            logger.error(f"Error sharing presentation: {error}")
-            return False
-        except Exception as error:
-            logger.error(
-                f"Unexpected error sharing presentation: {error}", exc_info=True
-            )
-            return False
-
-    def create_slide(self, presentation_id, layout="TITLE_AND_BODY"):
-        """
-        Creates a new slide in the presentation.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            layout (str): The slide layout predefined layout type
-                         (see https://developers.google.com/slides/api/reference/rest/v1/presentations.pages#Layout)
-
-        Returns:
-            str: The object ID of the created slide
-        """
-        try:
-            # Define the slide layout
-            
-
-            # Create the slide
-            requests = [
-                {
-                    "createSlide": {
-                        "objectId": str(uuid.uuid4()),
-                        "insertionIndex": "1",
-                        "slideLayoutReference": {
-                            "predefinedLayout": "TITLE_AND_TWO_COLUMNS"
-                        },
-                    }
-                }
-            ]
-
-            # If you wish to populate the slide with elements,
-            # add element create requests here, using the page_id.
-
-            # Execute the request.
-            body = {"requests": requests}
-            response = (
-                self.slide_service.presentations()
-                .batchUpdate(presentationId=presentation_id, body=body)
-                .execute()
-            )
-            create_slide_response = response.get("replies")[0].get("createSlide")
-            slide_id= create_slide_response.get('objectId')
-            logger.info(f"Created slide with ID: {slide_id}")
-
-            return slide_id
-        except Exception as e:
-            logger.error(f"Error creating slide: {e}")
-            return None
-
-    def add_text_box(
-        self,
-        presentation_id,
-        slide_id,
-        text,
-        x=100,
-        y=100,
-        width=400,
-        height=100,
-        font_size=14,
-        bold=False,
-        italic=False,
-        color=None,
-    ):
-        """
-        Adds a text box to a slide.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            text (str): The text content
-            x, y (float): Position coordinates (in points)
-            width, height (float): Size dimensions (in points)
-            font_size (int): Text font size
-            bold (bool): Whether text should be bold
-            italic (bool): Whether text should be italic
-            color (dict): Text color in RGB format, e.g., {"red": 0.5, "green": 0.5, "blue": 0.5}
-
-        Returns:
-            str: The object ID of the created text box
-        """
-        try:
-            # Generate a unique ID for the text box
-            text_box_id = f"textbox_{slide_id}_{hash(text) % 10000}"
-
-            # Define the text box
-            requests = [
-                {
-                    "createShape": {
-                        "objectId": text_box_id,
-                        "shapeType": "TEXT_BOX",
-                        "elementProperties": {
-                            "pageObjectId": slide_id,
-                            "size": {
-                                "width": {"magnitude": width, "unit": "PT"},
-                                "height": {"magnitude": height, "unit": "PT"},
-                            },
-                            "transform": {
-                                "scaleX": 1,
-                                "scaleY": 1,
-                                "translateX": x,
-                                "translateY": y,
-                                "unit": "PT",
-                            },
-                        },
-                    }
-                },
-                {"insertText": {"objectId": text_box_id, "text": text}},
-            ]
-
-            # Add text styling if specified
-            style_requests = []
-            if font_size or bold or italic or color:
-                style_request = {
-                    "updateTextStyle": {
-                        "objectId": text_box_id,
-                        "textRange": {"type": "ALL"},
-                        "style": {},
-                        "fields": "",
-                    }
-                }
-
-                if font_size:
-                    style_request["updateTextStyle"]["style"]["fontSize"] = {
-                        "magnitude": font_size,
-                        "unit": "PT",
-                    }
-                    style_request["updateTextStyle"]["fields"] += "fontSize,"
-
-                if bold:
-                    style_request["updateTextStyle"]["style"]["bold"] = True
-                    style_request["updateTextStyle"]["fields"] += "bold,"
-
-                if italic:
-                    style_request["updateTextStyle"]["style"]["italic"] = True
-                    style_request["updateTextStyle"]["fields"] += "italic,"
-
-                if color:
-                    style_request["updateTextStyle"]["style"]["foregroundColor"] = {
-                        "opaqueColor": {"rgbColor": color}
-                    }
-                    style_request["updateTextStyle"]["fields"] += "foregroundColor,"
-
-                # Remove trailing comma
-                style_request["updateTextStyle"]["fields"] = style_request[
-                    "updateTextStyle"
-                ]["fields"].rstrip(",")
-                style_requests.append(style_request)
-
-            # Execute the requests
-            all_requests = requests + style_requests
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": all_requests}
-            ).execute()
-
-            logger.info(f"Added text box to slide {slide_id}")
-            return text_box_id
-        except Exception as e:
-            logger.error(f"Error adding text box: {e}")
-            return None
-
-    def add_title(self, presentation_id, slide_id, title_text):
-        """
-        Adds a title to a slide by finding the title placeholder.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            title_text (str): The title text
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            # Get the slide details to find the title placeholder
-            slide = (
-                self.slide_service.presentations()
-                .pages()
-                .get(presentationId=presentation_id, pageObjectId=slide_id)
-                .execute()
-            )
-
-            # Find the title placeholder
-            title_placeholder_id = None
-            for element in slide.get("pageElements", []):
-                if (
-                    element.get("shape", {}).get("placeholder", {}).get("type")
-                    == "TITLE"
-                ):
-                    title_placeholder_id = element.get("objectId")
-                    break
-
-            if not title_placeholder_id:
-                logger.warning(f"No title placeholder found on slide {slide_id}")
-                # If no placeholder found, create a text box at the top as a title
-                return self.add_text_box(
-                    presentation_id,
-                    slide_id,
-                    title_text,
-                    x=100,
-                    y=50,
-                    width=600,
-                    height=60,
-                    font_size=24,
-                    bold=True,
-                )
-
-            # Insert text into the title placeholder
-            requests = [
-                {"insertText": {"objectId": title_placeholder_id, "text": title_text}}
-            ]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Added title to slide {slide_id}")
-            return True
-        except Exception as e:
-            logger.error(f"Error adding title: {e}")
-            return False
-
-    def add_body_text(self, presentation_id, slide_id, body_text):
-        """
-        Adds body text to a slide by finding the body placeholder.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            body_text (str): The body text
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            # Get the slide details to find the body placeholder
-            slide = (
-                self.slide_service.presentations()
-                .pages()
-                .get(presentationId=presentation_id, pageObjectId=slide_id)
-                .execute()
-            )
-
-            # Find the body placeholder
-            body_placeholder_id = None
-            for element in slide.get("pageElements", []):
-                if (
-                    element.get("shape", {}).get("placeholder", {}).get("type")
-                    == "BODY"
-                ):
-                    body_placeholder_id = element.get("objectId")
-                    break
-
-            if not body_placeholder_id:
-                logger.warning(f"No body placeholder found on slide {slide_id}")
-                # If no placeholder found, create a text box below the title area
-                return self.add_text_box(
-                    presentation_id,
-                    slide_id,
-                    body_text,
-                    x=100,
-                    y=150,
-                    width=600,
-                    height=300,
-                    font_size=14,
-                )
-
-            # Insert text into the body placeholder
-            requests = [
-                {"insertText": {"objectId": body_placeholder_id, "text": body_text}}
-            ]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Added body text to slide {slide_id}")
-            return True
-        except Exception as e:
-            logger.error(f"Error adding body text: {e}")
-            return False
-
-    def add_image_url(
-        self, presentation_id, slide_id, image_url, x=100, y=100, width=300, height=200
-    ):
-        """
-        Adds an image from a URL to a slide.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            image_url (str): The URL of the image
-            x, y (float): Position coordinates (in points)
-            width, height (float): Size dimensions (in points)
-
-        Returns:
-            str: The object ID of the created image
-        """
-        try:
-            # Generate a unique ID for the image
-            image_id = f"image_{slide_id}_{hash(image_url) % 10000}"
-
-            # Create the image
-            requests = [
-                {
-                    "createImage": {
-                        "objectId": image_id,
-                        "url": image_url,
-                        "elementProperties": {
-                            "pageObjectId": slide_id,
-                            "size": {
-                                "width": {"magnitude": width, "unit": "PT"},
-                                "height": {"magnitude": height, "unit": "PT"},
-                            },
-                            "transform": {
-                                "scaleX": 1,
-                                "scaleY": 1,
-                                "translateX": x,
-                                "translateY": y,
-                                "unit": "PT",
-                            },
-                        },
-                    }
-                }
-            ]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Added image to slide {slide_id}")
-            return image_id
-        except Exception as e:
-            logger.error(f"Error adding image: {e}")
-            return None
-
-    def add_shape(
-        self,
-        presentation_id,
-        slide_id,
-        shape_type="RECTANGLE",
-        x=100,
-        y=100,
-        width=200,
-        height=100,
-        fill_color=None,
-        border_color=None,
-    ):
-        """
-        Adds a shape to a slide.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            shape_type (str): The type of shape (RECTANGLE, ELLIPSE, etc.)
-            x, y (float): Position coordinates (in points)
-            width, height (float): Size dimensions (in points)
-            fill_color (dict): Fill color in RGB format, e.g., {"red": 0.5, "green": 0.5, "blue": 0.5}
-            border_color (dict): Border color in RGB format
-
-        Returns:
-            str: The object ID of the created shape
-        """
-        try:
-            # Generate a unique ID for the shape
-            shape_id = f"shape_{slide_id}_{hash(shape_type) % 10000}"
-
-            # Define the shape request
-            requests = [
-                {
-                    "createShape": {
-                        "objectId": shape_id,
-                        "shapeType": shape_type,
-                        "elementProperties": {
-                            "pageObjectId": slide_id,
-                            "size": {
-                                "width": {"magnitude": width, "unit": "PT"},
-                                "height": {"magnitude": height, "unit": "PT"},
-                            },
-                            "transform": {
-                                "scaleX": 1,
-                                "scaleY": 1,
-                                "translateX": x,
-                                "translateY": y,
-                                "unit": "PT",
-                            },
-                        },
-                    }
-                }
-            ]
-
-            # Add styling if specified
-            style_requests = []
-            if fill_color or border_color:
-                style_request = {
-                    "updateShapeProperties": {
-                        "objectId": shape_id,
-                        "shapeProperties": {},
-                        "fields": "",
-                    }
-                }
-
-                if fill_color:
-                    style_request["updateShapeProperties"]["shapeProperties"][
-                        "fill"
-                    ] = {"solidFill": {"color": {"rgbColor": fill_color}}}
-                    style_request["updateShapeProperties"]["fields"] += "fill,"
-
-                if border_color:
-                    style_request["updateShapeProperties"]["shapeProperties"][
-                        "outline"
-                    ] = {
-                        "outlineFill": {
-                            "solidFill": {"color": {"rgbColor": border_color}}
-                        },
-                        "weight": {"magnitude": 1, "unit": "PT"},
-                    }
-                    style_request["updateShapeProperties"]["fields"] += "outline,"
-
-                # Remove trailing comma
-                style_request["updateShapeProperties"]["fields"] = style_request[
-                    "updateShapeProperties"
-                ]["fields"].rstrip(",")
-                style_requests.append(style_request)
-
-            # Execute the requests
-            all_requests = requests + style_requests
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": all_requests}
-            ).execute()
-
-            logger.info(f"Added shape to slide {slide_id}")
-            return shape_id
-        except Exception as e:
-            logger.error(f"Error adding shape: {e}")
-            return None
-
-    def add_bullet_list(
-        self, presentation_id, slide_id, items, x=100, y=150, width=600, height=300
-    ):
-        """
-        Adds a bullet list to a slide.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            items (list): List of bullet point items
-            x, y (float): Position coordinates (in points)
-            width, height (float): Size dimensions (in points)
-
-        Returns:
-            str: The object ID of the created bullet list
-        """
-        try:
-            # Generate a unique ID for the text box
-            list_id = f"list_{slide_id}_{hash(str(items)) % 10000}"
-
-            # Format the bullet list text
-            bullet_text = "\n".join(items)
-
-            # Create the text box
-            requests = [
-                {
-                    "createShape": {
-                        "objectId": list_id,
-                        "shapeType": "TEXT_BOX",
-                        "elementProperties": {
-                            "pageObjectId": slide_id,
-                            "size": {
-                                "width": {"magnitude": width, "unit": "PT"},
-                                "height": {"magnitude": height, "unit": "PT"},
-                            },
-                            "transform": {
-                                "scaleX": 1,
-                                "scaleY": 1,
-                                "translateX": x,
-                                "translateY": y,
-                                "unit": "PT",
-                            },
-                        },
-                    }
-                },
-                {"insertText": {"objectId": list_id, "text": bullet_text}},
-            ]
-
-            # Apply bullet styling to each paragraph
-            bullet_requests = []
-            for i in range(len(items)):
-                start_index = 0 if i == 0 else sum(len(items[j]) for j in range(i)) + i
-                end_index = start_index + len(items[i])
-
-                bullet_request = {
-                    "createParagraphBullets": {
-                        "objectId": list_id,
-                        "textRange": {"startIndex": start_index, "endIndex": end_index},
-                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE",
-                    }
-                }
-                bullet_requests.append(bullet_request)
-
-            # Execute the requests
-            all_requests = requests + bullet_requests
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": all_requests}
-            ).execute()
-
-            logger.info(f"Added bullet list to slide {slide_id}")
-            return list_id
-        except Exception as e:
-            logger.error(f"Error adding bullet list: {e}")
-            return None
-
-    def add_chart(
-        self,
-        presentation_id,
-        slide_id,
-        chart_data,
-        chart_type="BAR",
-        x=100,
-        y=100,
-        width=400,
-        height=300,
-    ):
-        """
-        Adds a chart to a slide.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            chart_data (dict): Chart data structured according to Google Slides API
-                              (see API docs for specific format)
-            chart_type (str): Chart type (BAR, LINE, PIE, etc.)
-            x, y (float): Position coordinates (in points)
-            width, height (float): Size dimensions (in points)
-
-        Returns:
-            str: The object ID of the created chart
-        """
-        try:
-            # Generate a unique ID for the chart
-            chart_id = f"chart_{slide_id}_{hash(chart_type) % 10000}"
-
-            # Create the chart
-            requests = [
-                {
-                    "createSheetsChart": {
-                        "objectId": chart_id,
-                        "spreadsheetId": chart_data.get("spreadsheetId"),
-                        "chartId": chart_data.get("chartId"),
-                        "linkingMode": "LINKED",
-                        "elementProperties": {
-                            "pageObjectId": slide_id,
-                            "size": {
-                                "width": {"magnitude": width, "unit": "PT"},
-                                "height": {"magnitude": height, "unit": "PT"},
-                            },
-                            "transform": {
-                                "scaleX": 1,
-                                "scaleY": 1,
-                                "translateX": x,
-                                "translateY": y,
-                                "unit": "PT",
-                            },
-                        },
-                    }
-                }
-            ]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Added chart to slide {slide_id}")
-            return chart_id
-        except Exception as e:
-            logger.error(f"Error adding chart: {e}")
-            return None
-
-    def add_table(
-        self,
-        presentation_id,
-        slide_id,
-        rows,
-        cols,
-        data,
-        x=100,
-        y=100,
-        width=400,
-        height=300,
-    ):
-        """
-        Adds a table to a slide.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            rows (int): Number of rows
-            cols (int): Number of columns
-            data (list): 2D list of cell data [[row1_col1, row1_col2...], [row2_col1, row2_col2...], ...]
-            x, y (float): Position coordinates (in points)
-            width, height (float): Size dimensions (in points)
-
-        Returns:
-            str: The object ID of the created table
-        """
-        try:
-            # Generate a unique ID for the table
-            table_id = f"table_{slide_id}_{hash(str(data)) % 10000}"
-
-            # Create the table
-            requests = [
-                {
-                    "createTable": {
-                        "objectId": table_id,
-                        "rows": rows,
-                        "columns": cols,
-                        "elementProperties": {
-                            "pageObjectId": slide_id,
-                            "size": {
-                                "width": {"magnitude": width, "unit": "PT"},
-                                "height": {"magnitude": height, "unit": "PT"},
-                            },
-                            "transform": {
-                                "scaleX": 1,
-                                "scaleY": 1,
-                                "translateX": x,
-                                "translateY": y,
-                                "unit": "PT",
-                            },
-                        },
-                    }
-                }
-            ]
-
-            # Execute the create table request
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            # Populate the table cells
-            cell_requests = []
-            for i in range(min(rows, len(data))):
-                for j in range(min(cols, len(data[i]) if i < len(data) else 0)):
-                    cell_content = (
-                        str(data[i][j]) if i < len(data) and j < len(data[i]) else ""
-                    )
-
-                    insert_text_request = {
-                        "insertText": {
-                            "objectId": table_id,
-                            "cellLocation": {"rowIndex": i, "columnIndex": j},
-                            "text": cell_content,
-                        }
-                    }
-                    cell_requests.append(insert_text_request)
-
-            if cell_requests:
-                self.slide_service.presentations().batchUpdate(
-                    presentationId=presentation_id, body={"requests": cell_requests}
-                ).execute()
-
-            logger.info(f"Added table to slide {slide_id}")
-            return table_id
-        except Exception as e:
-            logger.error(f"Error adding table: {e}")
-            return None
-
-    def apply_slide_theme(self, presentation_id, theme_id=None):
-        """
-        Applies a theme to the presentation.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            theme_id (str): The ID of the theme to apply
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            # If no theme_id provided, use a default theme
-            if not theme_id:
-                # Unfortunately, direct theme application requires the theme to exist
-                # In a real implementation, you might have a set of predefined themes
-                logger.warning("Direct theme application requires an existing theme ID")
-                return False
-
-            requests = [{"applyTheme": {"themeId": theme_id}}]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Applied theme to presentation {presentation_id}")
-            return True
-        except Exception as e:
-            logger.error(f"Error applying theme: {e}")
-            return False
-
-    def add_speaker_notes(self, presentation_id, slide_id, notes):
-        """
-        Adds speaker notes to a slide.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide
-            notes (str): The speaker notes text
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            requests = [
-                {
-                    "insertText": {
-                        "objectId": slide_id,
-                        "insertionIndex": 0,
-                        "text": notes,
-                    }
-                }
-            ]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Added speaker notes to slide {slide_id}")
-            return True
-        except Exception as e:
-            logger.error(f"Error adding speaker notes: {e}")
-            return False
-
-    def delete_slide(self, presentation_id, slide_id):
-        """
-        Deletes a slide from the presentation.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide to delete
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            requests = [{"deleteObject": {"objectId": slide_id}}]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Deleted slide {slide_id}")
-            return True
-        except Exception as e:
-            logger.error(f"Error deleting slide: {e}")
-            return False
-
-    def move_slide(self, presentation_id, slide_id, new_position):
-        """
-        Moves a slide to a new position in the presentation.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            slide_id (str): The ID of the slide to move
-            new_position (int): The new position index (0-based)
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            requests = [
-                {
-                    "updateSlidesPosition": {
-                        "slideObjectIds": [slide_id],
-                        "insertionIndex": new_position,
-                    }
-                }
-            ]
-
-            self.slide_service.presentations().batchUpdate(
-                presentationId=presentation_id, body={"requests": requests}
-            ).execute()
-
-            logger.info(f"Moved slide {slide_id} to position {new_position}")
-            return True
-        except Exception as e:
-            logger.error(f"Error moving slide: {e}")
-            return False
-
-    def export_pdf(self, presentation_id, output_file="presentation.pdf"):
-        """
-        Exports the presentation as a PDF file.
-
-        Args:
-            presentation_id (str): The ID of the presentation
-            output_file (str): The output file path
-
-        Returns:
-            bool: True if successful, False otherwise
-        """
-        try:
-            # Export presentation as PDF
-            response = (
-                self.drive_service.files()
-                .export(fileId=presentation_id, mimeType="application/pdf")
-                .execute()
-            )
-
-            # Save the PDF
-            with open(output_file, "wb") as f:
-                f.write(response)
-
-            logger.info(f"Exported presentation to {output_file}")
-            return True
-        except Exception as e:
-            logger.error(f"Error exporting presentation as PDF: {e}")
-            return False
-
-
-# Example usage class
-class PresentationAI:
-    def __init__(self):
-        """Initialize the PresentationAI which uses the PresentationMaker."""
-        self.maker = PresentationMaker()
-
-    def create_simple_presentation(self, title, content_data):
-        """
-        Creates a simple presentation with title slide and content slides.
-
-        Args:
-            title (str): The title of the presentation
-            content_data (list): List of dictionaries containing slide data
-                                [{"title": "Slide Title", "content": "Slide content or bullet points list"}]
-
-        Returns:
-            str: The ID of the created presentation
-        """
-        # Create the presentation
-        presentation = self.maker.create_presentation(title)
-        if not presentation:
-            logger.error("Failed to create presentation")
-            return None
-
-        presentation_id = presentation.get("presentationId")
-
-        # Create title slide
-        title_slide_id = self.maker.create_slide(presentation_id, layout="TITLE")
-        self.maker.add_title(presentation_id, title_slide_id, title)
-        self.maker.add_text_box(
-            presentation_id,
-            title_slide_id,
-            "Created with PowerPoint Maker AI",
-            x=200,
-            y=350,
-            width=400,
-            height=50,
-            font_size=12,
-            italic=True,
-            color={"red": 0.5, "green": 0.5, "blue": 0.5},
-        )
-
-        # Create content slides
-        for slide_data in content_data:
-            slide_title = slide_data.get("title", "Untitled Slide")
-            slide_content = slide_data.get("content", "")
-
-            # Create slide
-            slide_id = self.maker.create_slide(presentation_id, layout="TITLE_AND_BODY")
-            self.maker.add_title(presentation_id, slide_id, slide_title)
-
-            # Check if content is a list or string
-            if isinstance(slide_content, list):
-                self.maker.add_bullet_list(presentation_id, slide_id, slide_content)
+        """Initialize a new presentation"""
+        self.prs = Presentation()
+        # Set slide dimensions (16:9 aspect ratio)
+        self.prs.slide_width = Inches(13.33)
+        self.prs.slide_height = Inches(7.5)
+
+    def create_title_slide(self, title, subtitle=""):
+        """Create a title slide with title and subtitle"""
+        # Use title slide layout (layout index 0)
+        title_slide_layout = self.prs.slide_layouts[0]
+        slide = self.prs.slides.add_slide(title_slide_layout)
+
+        # Set title
+        title_placeholder = slide.shapes.title
+        title_placeholder.text = title
+
+        # Format title
+        title_paragraph = title_placeholder.text_frame.paragraphs[0]
+        title_paragraph.font.size = Pt(44)
+        title_paragraph.font.bold = True
+        title_paragraph.font.color.rgb = RGBColor(31, 73, 125)  # Dark blue
+
+        # Set subtitle if provided
+        if subtitle:
+            subtitle_placeholder = slide.placeholders[1]
+            subtitle_placeholder.text = subtitle
+
+            # Format subtitle
+            subtitle_paragraph = subtitle_placeholder.text_frame.paragraphs[0]
+            subtitle_paragraph.font.size = Pt(24)
+            subtitle_paragraph.font.color.rgb = RGBColor(68, 114, 196)  # Medium blue
+
+        return slide
+
+    def create_content_slide(self, title, bullet_points):
+        """Create a slide with title and bullet points"""
+        # Use content slide layout (layout index 1)
+        bullet_slide_layout = self.prs.slide_layouts[1]
+        slide = self.prs.slides.add_slide(bullet_slide_layout)
+
+        # Set title
+        title_shape = slide.shapes.title
+        title_shape.text = title
+
+        # Format title
+        title_paragraph = title_shape.text_frame.paragraphs[0]
+        title_paragraph.font.size = Pt(32)
+        title_paragraph.font.bold = True
+        title_paragraph.font.color.rgb = RGBColor(31, 73, 125)
+
+        # Add bullet points
+        content_shape = slide.placeholders[1]
+        text_frame = content_shape.text_frame
+        text_frame.clear()  # Clear existing text
+
+        for i, point in enumerate(bullet_points):
+            if i == 0:
+                # Use existing paragraph for first bullet
+                p = text_frame.paragraphs[0]
             else:
-                self.maker.add_body_text(presentation_id, slide_id, slide_content)
+                # Add new paragraph for additional bullets
+                p = text_frame.add_paragraph()
 
-        logger.info(
-            f"Created presentation '{title}' with {len(content_data) + 1} slides"
+            p.text = point
+            p.level = 0  # Main bullet level
+            p.font.size = Pt(18)
+            p.font.color.rgb = RGBColor(0, 0, 0)  # Black text
+
+        return slide
+
+    def add_image_slide(self, title, image_path, caption=""):
+        """Create a slide with title, image, and optional caption"""
+        # Use blank slide layout
+        blank_slide_layout = self.prs.slide_layouts[6]
+        slide = self.prs.slides.add_slide(blank_slide_layout)
+
+        # Add title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5), Inches(12.33), Inches(1)
         )
-        return presentation_id
+        title_frame = title_box.text_frame
+        title_frame.text = title
+        title_paragraph = title_frame.paragraphs[0]
+        title_paragraph.font.size = Pt(32)
+        title_paragraph.font.bold = True
+        title_paragraph.font.color.rgb = RGBColor(31, 73, 125)
+        title_paragraph.alignment = PP_ALIGN.CENTER
 
-    def create_data_presentation(
-        self, title, chart_data, table_data=None, share_with=None
-    ):
-        """
-        Creates a data-focused presentation with charts and tables.
+        # Add image (check if file exists)
+        if os.path.exists(image_path):
+            # Calculate image position and size
+            img_left = Inches(2)
+            img_top = Inches(2)
+            img_width = Inches(9.33)
+            img_height = Inches(4)
 
-        Args:
-            title (str): The title of the presentation
-            chart_data (dict): Data for charts including spreadsheet ID and chart ID
-            table_data (list): List of tables to include [{"title": "Table Title", "data": [[row1], [row2]]}]
-            share_with (str): Email to share the presentation with (optional)
+            pic = slide.shapes.add_picture(
+                image_path, img_left, img_top, img_width, img_height
+            )
 
-        Returns:
-            str: The ID of the created presentation
-        """
-        # Create the presentation
-        presentation = self.maker.create_presentation(title)
-        if not presentation:
-            logger.error("Failed to create presentation")
-            return None
-
-        presentation_id = presentation.get("presentationId")
-
-        # Create title slide
-        title_slide_id = self.maker.create_slide(presentation_id, layout="TITLE")
-        self.maker.add_title(presentation_id, title_slide_id, title)
-        self.maker.add_text_box(
-            presentation_id,
-            title_slide_id,
-            "Data Visualization Presentation",
-            x=200,
-            y=350,
-            width=400,
-            height=50,
-            font_size=16,
-            italic=True,
-        )
-
-        # Add chart slide
-        chart_slide_id = self.maker.create_slide(
-            presentation_id, layout="TITLE_AND_CONTENT"
-        )
-        self.maker.add_title(presentation_id, chart_slide_id, "Data Analysis")
-        self.maker.add_chart(
-            presentation_id,
-            chart_slide_id,
-            chart_data,
-            x=100,
-            y=100,
-            width=500,
-            height=300,
-        )
-
-        # Add table slides if provided
-        if table_data:
-            for table_info in table_data:
-                table_title = table_info.get("title", "Data Table")
-                table_rows = table_info.get("data", [])
-
-                if not table_rows:
-                    continue
-
-                table_slide_id = self.maker.create_slide(
-                    presentation_id, layout="TITLE_AND_CONTENT"
+            # Add caption if provided
+            if caption:
+                caption_box = slide.shapes.add_textbox(
+                    Inches(2), Inches(6.5), Inches(9.33), Inches(0.5)
                 )
-                self.maker.add_title(presentation_id, table_slide_id, table_title)
+                caption_frame = caption_box.text_frame
+                caption_frame.text = caption
+                caption_paragraph = caption_frame.paragraphs[0]
+                caption_paragraph.font.size = Pt(14)
+                caption_paragraph.font.italic = True
+                caption_paragraph.alignment = PP_ALIGN.CENTER
+        else:
+            # Add placeholder text if image not found
+            placeholder_box = slide.shapes.add_textbox(
+                Inches(2), Inches(3), Inches(9.33), Inches(2)
+            )
+            placeholder_frame = placeholder_box.text_frame
+            placeholder_frame.text = f"Image not found: {image_path}"
+            placeholder_paragraph = placeholder_frame.paragraphs[0]
+            placeholder_paragraph.font.size = Pt(18)
+            placeholder_paragraph.alignment = PP_ALIGN.CENTER
 
-                rows = len(table_rows)
-                cols = len(table_rows[0]) if rows > 0 else 0
+        return slide
 
-                if rows > 0 and cols > 0:
-                    self.maker.add_table(
-                        presentation_id,
-                        table_slide_id,
-                        rows,
-                        cols,
-                        table_rows,
-                        x=50,
-                        y=100,
-                        width=600,
-                        height=300,
-                    )
+    def add_chart_slide(self, title, chart_data, chart_type="column"):
+        """Create a slide with a chart"""
+        # Use blank slide layout
+        blank_slide_layout = self.prs.slide_layouts[6]
+        slide = self.prs.slides.add_slide(blank_slide_layout)
 
-        # Share the presentation if an email is provided
-        if share_with:
-            self.maker.share_presentation(share_with, presentation_id)
-            logger.info(f"Shared presentation with {share_with}")
+        # Add title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5), Inches(12.33), Inches(1)
+        )
+        title_frame = title_box.text_frame
+        title_frame.text = title
+        title_paragraph = title_frame.paragraphs[0]
+        title_paragraph.font.size = Pt(28)
+        title_paragraph.font.bold = True
+        title_paragraph.font.color.rgb = RGBColor(31, 73, 125)
+        title_paragraph.alignment = PP_ALIGN.CENTER
 
-        logger.info(f"Created data presentation with ID: {presentation_id}")
-        return presentation_id
+        # Create chart data
+        chart_data_obj = CategoryChartData()
 
-# Example use of the PowerPoint Maker AI
-if __name__ == "__main__":
-    # Initialize the AI
-    ppt_ai = PresentationAI()
+        # Add categories (x-axis labels)
+        categories = list(chart_data.keys())
+        chart_data_obj.categories = categories
 
-    # Example 1: Create a simple presentation
-    simple_content = [
-        {
-            "title": "Introduction",
-            "content": "This is a simple presentation created with Python.",
-        },
-        {
-            "title": "Features",
-            "content": [
-                "Automatic slide creation",
-                "Text formatting",
-                "Images and shapes",
-                "Tables and charts",
-                "PDF export capability",
-            ],
-        },
-        {
-            "title": "Conclusion",
-            "content": "Thank you for using our PowerPoint Maker AI!",
-        },
-    ]
+        # Add series data (assuming single series for simplicity)
+        values = list(chart_data.values())
+        chart_data_obj.add_series("Series 1", values)
 
-    simple_ppt_id = ppt_ai.create_simple_presentation(
-        "Demo Presentation", simple_content
+        # Add chart to slide
+        x, y, cx, cy = Inches(1.5), Inches(2), Inches(10), Inches(4.5)
+
+        if chart_type.lower() == "column":
+            chart_type_enum = XL_CHART_TYPE.COLUMN_CLUSTERED
+        elif chart_type.lower() == "pie":
+            chart_type_enum = XL_CHART_TYPE.PIE
+        elif chart_type.lower() == "line":
+            chart_type_enum = XL_CHART_TYPE.LINE
+        else:
+            chart_type_enum = XL_CHART_TYPE.COLUMN_CLUSTERED
+
+        graphic_frame = slide.shapes.add_chart(
+            chart_type_enum, x, y, cx, cy, chart_data_obj
+        )
+        chart = graphic_frame.chart
+
+        # Customize chart appearance
+        chart.has_legend = True
+        chart.legend.position = 2  # Right side
+
+        return slide
+
+    def add_text_box(self, slide, text, left, top, width, height, font_size=18):
+        """Add a text box to a slide"""
+        text_box = slide.shapes.add_textbox(
+            Inches(left), Inches(top), Inches(width), Inches(height)
+        )
+        text_frame = text_box.text_frame
+        text_frame.text = text
+
+        # Format text
+        paragraph = text_frame.paragraphs[0]
+        paragraph.font.size = Pt(font_size)
+        paragraph.font.color.rgb = RGBColor(0, 0, 0)
+
+        return text_box
+
+    def add_shape(self, slide, shape_type, left, top, width, height, fill_color=None):
+        """Add a shape to a slide"""
+        if shape_type.lower() == "rectangle":
+            shape = slide.shapes.add_shape(
+                MSO_SHAPE.RECTANGLE,
+                Inches(left),
+                Inches(top),
+                Inches(width),
+                Inches(height),
+            )
+        elif shape_type.lower() == "circle":
+            shape = slide.shapes.add_shape(
+                MSO_SHAPE.OVAL, Inches(left), Inches(top), Inches(width), Inches(height)
+            )
+        else:
+            shape = slide.shapes.add_shape(
+                MSO_SHAPE.RECTANGLE,
+                Inches(left),
+                Inches(top),
+                Inches(width),
+                Inches(height),
+            )
+
+        # Set fill color if provided
+        if fill_color:
+            fill = shape.fill
+            fill.solid()
+            if isinstance(fill_color, tuple) and len(fill_color) == 3:
+                fill.fore_color.rgb = RGBColor(*fill_color)
+
+        return shape
+
+    def create_table_slide(self, title, table_data):
+        """Create a slide with a table"""
+        blank_slide_layout = self.prs.slide_layouts[6]
+        slide = self.prs.slides.add_slide(blank_slide_layout)
+
+        # Add title
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.5), Inches(12.33), Inches(1)
+        )
+        title_frame = title_box.text_frame
+        title_frame.text = title
+        title_paragraph = title_frame.paragraphs[0]
+        title_paragraph.font.size = Pt(28)
+        title_paragraph.font.bold = True
+        title_paragraph.font.color.rgb = RGBColor(31, 73, 125)
+        title_paragraph.alignment = PP_ALIGN.CENTER
+
+        # Create table
+        rows = len(table_data)
+        cols = len(table_data[0]) if table_data else 0
+
+        if rows > 0 and cols > 0:
+            left = Inches(1)
+            top = Inches(2)
+            width = Inches(11.33)
+            height = Inches(4.5)
+
+            table = slide.shapes.add_table(rows, cols, left, top, width, height).table
+
+            # Populate table
+            for row_idx, row_data in enumerate(table_data):
+                for col_idx, cell_data in enumerate(row_data):
+                    cell = table.cell(row_idx, col_idx)
+                    cell.text = str(cell_data)
+
+                    # Format header row
+                    if row_idx == 0:
+                        cell.fill.solid()
+                        cell.fill.fore_color.rgb = RGBColor(68, 114, 196)
+                        cell.text_frame.paragraphs[0].font.color.rgb = RGBColor(
+                            255, 255, 255
+                        )
+                        cell.text_frame.paragraphs[0].font.bold = True
+
+        return slide
+
+    def save_presentation(self, filename):
+        """Save the presentation to a file"""
+        try:
+            self.prs.save(filename)
+            print(f"Presentation saved as: {filename}")
+            return True
+        except Exception as e:
+            print(f"Error saving presentation: {e}")
+            return False
+
+
+# Example usage and demonstration
+def create_sample_presentation():
+    """Create a sample presentation demonstrating all features"""
+
+    # Initialize generator
+    ppt_gen = PPTXGenerator()
+
+    # 1. Create title slide
+    ppt_gen.create_title_slide(
+        title="Python-PPTX Demo Presentation",
+        subtitle="Demonstrating Basic PowerPoint Operations",
     )
 
-    # Example 2: Create a data presentation (assuming you have Google Sheets charts)
-    # Note: This requires a Google Sheet with charts already created
-    chart_data = {
-        "spreadsheetId": "your_spreadsheet_id",  # Replace with actual ID
-        "chartId": 1234,  # Replace with actual chart ID
-    }
+    # 2. Create content slide with bullet points
+    bullet_points = [
+        "Create professional presentations programmatically",
+        "Add various types of content (text, images, charts)",
+        "Customize formatting and styling",
+        "Automate repetitive presentation tasks",
+        "Export to standard PowerPoint formats",
+    ]
+    ppt_gen.create_content_slide("Key Features", bullet_points)
 
+    # 3. Create image slide (note: you'll need to provide an actual image path)
+    # ppt_gen.add_image_slide(
+    #     title="Sample Image Slide",
+    #     image_path="sample_image.jpg",  # Replace with actual image path
+    #     caption="This is a sample image caption"
+    # )
+
+    # 4. Create chart slide
+    chart_data = {"Q1": 20, "Q2": 35, "Q3": 42, "Q4": 28}
+    ppt_gen.add_chart_slide("Quarterly Results", chart_data, "column")
+
+    # 5. Create table slide
     table_data = [
+        ["Product", "Q1 Sales", "Q2 Sales", "Q3 Sales"],
+        ["Product A", "$10,000", "$12,000", "$15,000"],
+        ["Product B", "$8,000", "$9,500", "$11,000"],
+        ["Product C", "$15,000", "$18,000", "$20,000"],
+    ]
+    ppt_gen.create_table_slide("Sales Data", table_data)
+
+    # 6. Create a custom slide with shapes and text boxes
+    blank_slide_layout = ppt_gen.prs.slide_layouts[6]
+    custom_slide = ppt_gen.prs.slides.add_slide(blank_slide_layout)
+
+    # Add custom title
+    ppt_gen.add_text_box(custom_slide, "Custom Slide with Shapes", 1, 0.5, 11.33, 1, 28)
+
+    # Add shapes
+    ppt_gen.add_shape(custom_slide, "rectangle", 2, 2, 3, 1.5, (68, 114, 196))
+    ppt_gen.add_shape(custom_slide, "circle", 8, 2, 2, 2, (255, 192, 0))
+
+    # Add text over shapes
+    ppt_gen.add_text_box(custom_slide, "Rectangle", 2.5, 2.5, 2, 0.5, 16)
+    ppt_gen.add_text_box(custom_slide, "Circle", 8.5, 2.8, 1, 0.5, 16)
+
+    # Save the presentation
+    ppt_gen.save_presentation("sample_presentation.pptx")
+
+    return ppt_gen
+
+
+def create_quick_presentation(title, slides_data, filename):
+    """Quickly create a presentation from structured data"""
+    ppt_gen = PPTXGenerator()
+
+    # Create title slide
+    ppt_gen.create_title_slide(title)
+
+    # Create content slides
+    for slide_info in slides_data:
+        if slide_info["type"] == "content":
+            ppt_gen.create_content_slide(slide_info["title"], slide_info["content"])
+        elif slide_info["type"] == "chart":
+            ppt_gen.add_chart_slide(
+                slide_info["title"],
+                slide_info["data"],
+                slide_info.get("chart_type", "column"),
+            )
+        elif slide_info["type"] == "table":
+            ppt_gen.create_table_slide(slide_info["title"], slide_info["data"])
+
+    # Save presentation
+    ppt_gen.save_presentation(filename)
+    return ppt_gen
+
+
+# Example of quick presentation creation
+if __name__ == "__main__":
+    # Create sample presentation
+    create_sample_presentation()
+
+    # Example of quick presentation creation
+    quick_slides = [
         {
-            "title": "Sales Data",
-            "data": [
-                ["Region", "Q1", "Q2", "Q3", "Q4"],
-                ["North", 10000, 12000, 15000, 18000],
-                ["South", 8000, 9000, 10000, 12000],
-                ["East", 12000, 13000, 14000, 15000],
-                ["West", 9000, 10000, 11000, 13000],
+            "type": "content",
+            "title": "Project Overview",
+            "content": [
+                "Goal: Automate presentation creation",
+                "Timeline: 4 weeks",
+                "Team: 3 developers",
             ],
-        }
+        },
+        {
+            "type": "chart",
+            "title": "Progress Tracking",
+            "data": {"Week 1": 25, "Week 2": 50, "Week 3": 75, "Week 4": 100},
+            "chart_type": "line",
+        },
     ]
 
-    data_ppt_id = ppt_ai.create_data_presentation(
-        "Quarterly Sales Report",
-        chart_data,
-        table_data,
-        share_with="priyalakhani91@gmail.com",  # Optional
+    create_quick_presentation(
+        "Project Status Update", quick_slides, "quick_presentation.pptx"
     )
-
-    # Example 3: Create a marketing presentation
-    brand_color = {"red": 0.2, "green": 0.6, "blue": 0.9}  # Blue-ish color
