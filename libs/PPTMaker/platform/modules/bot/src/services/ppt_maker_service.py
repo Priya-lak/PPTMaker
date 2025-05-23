@@ -9,7 +9,7 @@ from libs.PPTMaker.platform.modules.bot.src.utils.charts_util import ChartHandle
 from libs.PPTMaker.platform.modules.bot.src.utils.images_util import ImageHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.shapes_util import ShapeHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
-from libs.PPTMaker.platform.modules.bot.src.utils.styles.styling_util import (
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
 )
 from libs.PPTMaker.platform.modules.bot.src.utils.tables_util import TableHandler

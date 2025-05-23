@@ -4,15 +4,16 @@ from pptx import Presentation
 from pptx.util import Pt
 
 from libs.PPTMaker.enums.colors_enum import ColorEnum
-from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
-    ColorPalette,
-    FontStyle,
-    PresentationStyleConfig,
-    StyleTheme,
-)
-from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
+
+# from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
+    PresentationStyleConfig,
+)
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
+    ColorPalette,
+    FontStyle,
+    StyleTheme,
 )
 
 
@@ -53,15 +54,15 @@ class CorporateStyle(BasePresentationStyle):
         return fonts
 
 
-def main():
-    prs = Presentation()
-    style = CorporateStyle()
-    layout_manager = SlideLayoutManager(prs, style)
-    title_text = "Corporate Theme"
-    subtitle_text = "Polished. Professional. Consistent."
-    layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
-    prs.save("output/demo/corporate-style.pptx")
+# def main():
+#     prs = Presentation()
+#     style = CorporateStyle()
+#     layout_manager = SlideLayoutManager(prs, style)
+#     title_text = "Corporate Theme"
+#     subtitle_text = "Polished. Professional. Consistent."
+#     layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
+#     prs.save("output/demo/corporate-style.pptx")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

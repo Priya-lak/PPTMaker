@@ -11,8 +11,8 @@ from libs.PPTMaker.platform.modules.bot.src.services.llm_service import LLMServi
 from libs.PPTMaker.platform.modules.bot.src.services.ppt_maker_service import (
     PPTXGenerator,
 )
-from libs.PPTMaker.platform.modules.bot.src.utils.styles.styling_util import (
-    StyleFactory,
+from libs.PPTMaker.platform.modules.bot.src.utils.styles import StyleFactory
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
     StyleTheme,
 )
 from libs.utils.common.custom_logger import CustomLogger
@@ -106,9 +106,9 @@ def main():
         "Is Cereal a Soup? A Philosophical Debate",
     ]
 
-    theme = StyleTheme.PUNK
-    topic = topics[6]
-    service = PPTGenerator(style_theme=theme)
+    theme = StyleTheme.CLASSY
+    topic = "How would life be if there were only one gender"
+    service = PPTGenerator(style_theme=theme.value)
     content = service.generate_content(topic)
     service.create_presentation_from_content(content=content)
 
