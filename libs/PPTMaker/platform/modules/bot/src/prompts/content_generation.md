@@ -61,7 +61,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
 #### **Content Pages**
 - `type`: `"content_page"` or `"title_page"`
 - `title`: Slide title
-- `bullet_points`: List of 3–5 bullet points (can be `null`)
+- `bullet_points`: List of 5-6 bullet points (can be `null`)
 
 #### **Image Pages**
 - `type`: `"image_page"` or `"image_content_page"`
@@ -73,8 +73,10 @@ You will be given a **topic**. Based on that topic, generate a structured presen
 ### **Guidelines:**
 - Keep total slides between **4–6** (excluding title page)
 - Mix content and image pages for visual variety
+- Make the bullet points more descriptive
 - Use image pages for concepts that benefit from visual representation
 - Choose appropriate layouts based on content type
 - Keep content concise and presentation-ready
+- Play around with the layouts and positions of slides, don't necessarily copy the example
 
 **IMPORTANT**: Output only the JSON structure without any explanatory text, markdown formatting, or code blocks.
