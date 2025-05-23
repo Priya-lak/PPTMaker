@@ -1,9 +1,12 @@
+from pptx import Presentation
+
 from libs.PPTMaker.enums.colors_enum import ColorEnum
 from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
     ColorPalette,
     PresentationStyleConfig,
     StyleTheme,
 )
+from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
 )
@@ -35,3 +38,17 @@ class DarkStyle(BasePresentationStyle):
             warning=ColorEnum.GOLD.value,
             danger=ColorEnum.RED_ORANGE.value,
         )
+
+
+def main():
+    prs = Presentation()
+    style = DarkStyle()
+    layout_manager = SlideLayoutManager(prs, style)
+    title_text = "Dark Mode Showcase"
+    subtitle_text = "Sleek. Modern. Focused."
+    layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
+    prs.save("output/demo/dark-style.pptx")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,7 @@
 from typing import Dict
 
+from pptx import Presentation
+
 from libs.PPTMaker.enums.colors_enum import ColorEnum
 from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
     ColorPalette,
@@ -7,6 +9,7 @@ from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
     PresentationStyleConfig,
     StyleTheme,
 )
+from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
 )
@@ -38,7 +41,7 @@ class PunkStyle(BasePresentationStyle):
             background=ColorEnum.BACKGROUND_DARK.value,
             success=ColorEnum.GREEN_BRIGHT.value,
             warning=ColorEnum.ORANGE.value,
-            danger=ColorEnum.RED_BRIGHT.value,
+            danger=ColorEnum.RED.value,
         )
 
     def _create_font_styles(self) -> Dict[str, FontStyle]:
@@ -56,3 +59,17 @@ class PunkStyle(BasePresentationStyle):
         fonts["caption"].color = self.colors.primary_light  # Hot pink for flair
 
         return fonts
+
+
+def main():
+    prs = Presentation()
+    style = PunkStyle()
+    layout_manager = SlideLayoutManager(prs, style)
+    title_text = "Punk Design"
+    subtitle_text = "Punk design"
+    layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
+    prs.save("output/demo/punk-style.pptx")
+
+
+if __name__ == "__main__":
+    main()

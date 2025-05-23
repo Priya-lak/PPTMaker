@@ -1,5 +1,6 @@
 from typing import Dict
 
+from pptx import Presentation
 from pptx.util import Pt
 
 from libs.PPTMaker.enums.colors_enum import ColorEnum
@@ -9,6 +10,7 @@ from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
     PresentationStyleConfig,
     StyleTheme,
 )
+from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
 )
@@ -49,3 +51,17 @@ class CorporateStyle(BasePresentationStyle):
         fonts["title_medium"].size = Pt(28)
         fonts["subtitle"].size = Pt(20)
         return fonts
+
+
+def main():
+    prs = Presentation()
+    style = CorporateStyle()
+    layout_manager = SlideLayoutManager(prs, style)
+    title_text = "Corporate Theme"
+    subtitle_text = "Polished. Professional. Consistent."
+    layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
+    prs.save("output/demo/corporate-style.pptx")
+
+
+if __name__ == "__main__":
+    main()
