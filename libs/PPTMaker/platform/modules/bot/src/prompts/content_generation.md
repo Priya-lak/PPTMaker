@@ -26,6 +26,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "image_page",
       "title": "Types of AI",
+      "image_search_keyword":"Narrow AI , General AI, Superintelligent AI",
       "image_description": "Diagram showing three levels of AI: Narrow AI (current), General AI (theoretical), and Superintelligent AI (future concept)",
       "caption": "AI exists on a spectrum from specialized narrow AI we use today to theoretical superintelligent systems",
       "layout": "side_by_side"
@@ -43,6 +44,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "image_content_page",
       "title": "Future of AI",
+      "image_search_keyword":"Artificial Intelligence timeline",
       "image_description": "Timeline visualization showing AI evolution from current applications to future developments with ethical considerations",
       "caption": "The next decade will see AI integration across all industries while addressing safety and ethical challenges",
       "layout": "image_bottom"

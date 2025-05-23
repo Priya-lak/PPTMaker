@@ -1,11 +1,15 @@
 import json
 import traceback
+import uuid
 
 from libs.PPTMaker.platform.modules.bot.src.constants import CONTENT_GENERATION_PROMPT
 from libs.PPTMaker.platform.modules.bot.src.models.content_models import (
     ContentPage,
     ImagePage,
     PresentationModel,
+)
+from libs.PPTMaker.platform.modules.bot.src.services.image_search_service import (
+    ImageSearchService,
 )
 from libs.PPTMaker.platform.modules.bot.src.services.llm_service import LLMService
 from libs.PPTMaker.platform.modules.bot.src.services.ppt_maker_service import (
@@ -29,6 +33,7 @@ class PPTGenerator:
         self.llm_service = LLMService()
         self.style = StyleFactory.create_style(style_theme)
         self.ppt_service = PPTXGenerator(style=self.style)
+        self.image_search_service = ImageSearchService()
 
     def generate_content(self, topic: str):
         messages = [
@@ -63,10 +68,13 @@ class PPTGenerator:
                     logger.info(f"content slide")
 
                 elif isinstance(content_slides, ImagePage):
-                    sample_image_path = "static/images/sample_image.jpg"
+                    image_path = f"static/images/{uuid.uuid4()}.png"
+                    self.image_search_service.search_by_topic(
+                        content_slides.image_search_keyword, image_path
+                    )
                     self.ppt_service.add_image_slide(
                         content_slides.title,
-                        sample_image_path,
+                        image_path,
                         caption=content_slides.caption,
                         layout_type=content_slides.layout,
                     )
@@ -107,7 +115,7 @@ def main():
     ]
 
     theme = StyleTheme.CLASSY
-    topic = "How would life be if there were only one gender"
+    topic = "Harry potter's impact on millennials"
     service = PPTGenerator(style_theme=theme.value)
     content = service.generate_content(topic)
     service.create_presentation_from_content(content=content)
