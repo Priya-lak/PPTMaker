@@ -4,7 +4,6 @@ from dotenv import dotenv_values
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-
 env_path = ".env"
 
 if not path.exists(env_path):
@@ -18,5 +17,6 @@ TIME_WINDOW = config.get("TIME_WINDOW", "minute")
 RATE_LIMIT = f"{MAX_REQUESTS}/{TIME_WINDOW}"
 
 
-
-limiter = Limiter(key_func=get_remote_address, )
+limiter = Limiter(
+    key_func=get_remote_address,
+)

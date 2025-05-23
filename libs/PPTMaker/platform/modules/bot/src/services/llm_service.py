@@ -1,12 +1,14 @@
 from typing import Dict, List
+
 from groq import Groq
 from pydantic import BaseModel
-from libs.utils.common.custom_logger import CustomLogger
+
 from libs.PPTMaker.platform.modules.bot.src.config.groq_config import (
-    MODEL_NAME,
-    MAX_TOKENS,
     GROQ_API_KEY,
+    MAX_TOKENS,
+    MODEL_NAME,
 )
+from libs.utils.common.custom_logger import CustomLogger
 
 log = CustomLogger("GroqLLMService", is_request=False)
 
@@ -31,7 +33,7 @@ class LLMService:
             max_tokens=self.max_tokens,
             response_format=response_format,
         )
-        response_content=response.choices[0].message.content
+        response_content = response.choices[0].message.content
         logger.info(f"LLM response {response_content}")
         return response_content
 

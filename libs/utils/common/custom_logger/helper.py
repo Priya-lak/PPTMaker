@@ -8,7 +8,10 @@ from starlette.routing import Match
 from libs.utils.common.custom_logger.constants import Colors
 from libs.utils.common.custom_logger.enums import LogType
 from libs.utils.common.custom_logger.str_helpers import color_string
-from libs.utils.common.date_time import convert_ms_to_readable_format, get_execution_time_in_seconds
+from libs.utils.common.date_time import (
+    convert_ms_to_readable_format,
+    get_execution_time_in_seconds,
+)
 
 
 def extra_details_for_req(
