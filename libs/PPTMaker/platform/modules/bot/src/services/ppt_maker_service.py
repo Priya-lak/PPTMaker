@@ -9,7 +9,9 @@ from libs.PPTMaker.platform.modules.bot.src.utils.charts_util import ChartHandle
 from libs.PPTMaker.platform.modules.bot.src.utils.images_util import ImageHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.shapes_util import ShapeHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
-from libs.PPTMaker.platform.modules.bot.src.utils.styling_util import PresentationStyle
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.styling_util import (
+    BasePresentationStyle,
+)
 from libs.PPTMaker.platform.modules.bot.src.utils.tables_util import TableHandler
 from libs.utils.common.custom_logger import CustomLogger
 
@@ -23,10 +25,10 @@ listener.start()
 class PPTXGenerator:
     """Main presentation generator class that orchestrates all components"""
 
-    def __init__(self, style=None):
+    def __init__(self, style: BasePresentationStyle = None):
         """Initialize presentation generator with optional custom styling"""
         self.prs = Presentation()
-        self.style = style or PresentationStyle()
+        self.style = style or BasePresentationStyle()
 
         # Set slide dimensions
         self.prs.slide_width = self.style.get_dimension("slide_width")

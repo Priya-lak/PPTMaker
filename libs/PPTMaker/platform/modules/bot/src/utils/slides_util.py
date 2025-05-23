@@ -1,44 +1,54 @@
+from pptx import Presentation
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches
+
+from libs.PPTMaker.platform.modules.bot.src.models.slide_models import SlideLayout
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.styling_util import (
+    BasePresentationStyle,
+)
 
 
 class SlideLayoutManager:
     """Handles slide layout creation and management"""
 
-    def __init__(self, presentation, style):
+    def __init__(self, presentation: Presentation, style: BasePresentationStyle):
         self.prs = presentation
         self.style = style
 
-    def create_title_slide(self, title, subtitle=""):
+    def create_title_slide(self, title: str, subtitle: str = ""):
         """Create a title slide with title and subtitle"""
-        title_slide_layout = self.prs.slide_layouts[0]
-        slide = self.prs.slides.add_slide(title_slide_layout)
+        layout = self.prs.slide_layouts[SlideLayout.TITLE]
+        slide = self.prs.slides.add_slide(layout)
 
         # Set and format title
         title_placeholder = slide.shapes.title
         title_placeholder.text = title
-        title_paragraph = title_placeholder.text_frame.paragraphs[0]
-        self.style.apply_font_style(title_paragraph, "title_large")
+        self.style.apply_font_style(
+            title_placeholder.text_frame.paragraphs[0], "title_large"
+        )
 
         # Set and format subtitle if provided
         if subtitle:
             subtitle_placeholder = slide.placeholders[1]
             subtitle_placeholder.text = subtitle
-            subtitle_paragraph = subtitle_placeholder.text_frame.paragraphs[0]
-            self.style.apply_font_style(subtitle_paragraph, "subtitle")
+            self.style.apply_font_style(
+                subtitle_placeholder.text_frame.paragraphs[0], "subtitle"
+            )
+        self.style.apply_background(slide)
 
         return slide
 
-    def create_content_slide(self, title, bullet_points):
+    def create_content_slide(self, title: str, bullet_points: list[str]):
         """Create a slide with title and bullet points"""
-        bullet_slide_layout = self.prs.slide_layouts[1]
-        slide = self.prs.slides.add_slide(bullet_slide_layout)
+        layout = self.prs.slide_layouts[SlideLayout.TITLE_AND_CONTENT]
+        slide = self.prs.slides.add_slide(layout)
 
         # Set and format title
         title_shape = slide.shapes.title
         title_shape.text = title
-        title_paragraph = title_shape.text_frame.paragraphs[0]
-        self.style.apply_font_style(title_paragraph, "title_medium")
+        self.style.apply_font_style(
+            title_shape.text_frame.paragraphs[0], "title_medium"
+        )
 
         # Add and format bullet points
         content_shape = slide.placeholders[1]
@@ -46,23 +56,21 @@ class SlideLayoutManager:
         text_frame.clear()
 
         for i, point in enumerate(bullet_points):
-            if i == 0:
-                p = text_frame.paragraphs[0]
-            else:
-                p = text_frame.add_paragraph()
-
+            p = text_frame.paragraphs[0] if i == 0 else text_frame.add_paragraph()
             p.text = point
             p.level = 0
             self.style.apply_font_style(p, "body_large")
 
+        self.style.apply_background(slide)
+
         return slide
 
-    def create_blank_slide_with_title(self, title):
+    def create_blank_slide_with_title(self, title: str):
         """Create a blank slide with a centered title"""
-        blank_slide_layout = self.prs.slide_layouts[6]
-        slide = self.prs.slides.add_slide(blank_slide_layout)
+        layout = self.prs.slide_layouts[SlideLayout.BLANK]
+        slide = self.prs.slides.add_slide(layout)
 
-        # Add title
+        # Add centered title textbox
         title_box = slide.shapes.add_textbox(
             self.style.get_dimension("margin_standard"),
             Inches(0.3),
@@ -74,5 +82,7 @@ class SlideLayoutManager:
         title_paragraph = title_frame.paragraphs[0]
         self.style.apply_font_style(title_paragraph, "title_medium")
         title_paragraph.alignment = PP_ALIGN.CENTER
+
+        self.style.apply_background(slide)
 
         return slide

@@ -17,8 +17,6 @@ class RequestDetailsFilter(logging.Filter):
         super().__init__(*args, **kwargs)
 
     def filter(self, record):
-        record.requestId = "rid-None"
-        record.userId = "uid-None"
         record.relative_path = os.path.relpath(record.pathname, start=os.getcwd())
         if self.is_request:
             record.requestId = f"rid-{context.get('X-Request-ID', 'None')}"
@@ -95,8 +93,6 @@ console_format = ColoredFormatter(
         [
             "%(auditAt)s |",
             "%(logLevel)s |",
-            "%(userId)s |",
-            "%(requestId)s |",
             "%(logType)s |",
             "%(relative_path)s:%(lineno)d|",
             "%(message)s",
