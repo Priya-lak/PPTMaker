@@ -18,6 +18,7 @@ class ImagePage(BaseModel):
         "image_content_page",
     ]
     title: str
+    image_search_keyword: str
     image_description: str
     caption: str
     layout: Literal["side_by_side", "image_bottom", "image_title_caption", "standard"]
