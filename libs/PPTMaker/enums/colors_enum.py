@@ -32,6 +32,7 @@ class ColorEnum(Enum):
 
     # Greens
     GREEN_SUCCESS = RGBColor(40, 167, 69)
+    GREEN_BRIGHT = RGBColor(40, 167, 69)
     SPRING_GREEN = RGBColor(0, 255, 127)
     DARK_GREEN = RGBColor(0, 100, 0)
     FOREST_GREEN = RGBColor(34, 139, 34)
@@ -55,6 +56,7 @@ class ColorEnum(Enum):
     # Yellows & Oranges
     GOLD = RGBColor(255, 215, 0)
     GOLD_DARK = RGBColor(255, 192, 0)
+    YELLOW = RGBColor(255, 255, 0)
     YELLOW_WARNING = RGBColor(255, 193, 7)
     ORANGE = RGBColor(255, 165, 0)
     DARK_ORANGE = RGBColor(255, 140, 0)
