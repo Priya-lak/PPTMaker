@@ -114,8 +114,8 @@ def main():
         "Is Cereal a Soup? A Philosophical Debate",
     ]
 
-    theme = StyleTheme.CLASSY
-    topic = "Harry potter's impact on millennials"
+    theme = StyleTheme.DARK
+    topic = "Charles Darwin- evolution theory"
     service = PPTGenerator(style_theme=theme.value)
     content = service.generate_content(topic)
     service.create_presentation_from_content(content=content)
