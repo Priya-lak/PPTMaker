@@ -1,6 +1,4 @@
-
-
-###  **Prompt Instruction (Refactored)**
+### **Prompt Instruction (Refactored)**
 
 You will be given a **topic**. Based on that topic, generate a structured presentation outline in **JSON format** with the following structure:
 
@@ -26,13 +24,11 @@ You will be given a **topic**. Based on that topic, generate a structured presen
       ]
     },
     {
-      "type": "content_page",
+      "type": "image_page",
       "title": "Types of AI",
-      "bullet_points": [
-        "Narrow AI: Specialized for a specific task (e.g., Siri, Google Maps)",
-        "General AI: Can perform any intellectual task a human can do (still theoretical)",
-        "Superintelligent AI: Surpasses human intelligence (a future concept)"
-      ]
+      "image_description": "Diagram showing three levels of AI: Narrow AI (current), General AI (theoretical), and Superintelligent AI (future concept)",
+      "caption": "AI exists on a spectrum from specialized narrow AI we use today to theoretical superintelligent systems",
+      "layout": "side_by_side"
     },
     {
       "type": "content_page",
@@ -45,30 +41,40 @@ You will be given a **topic**. Based on that topic, generate a structured presen
       ]
     },
     {
-      "type": "content_page",
+      "type": "image_content_page",
       "title": "Future of AI",
-      "bullet_points": [
-        "Ethical concerns and regulation",
-        "Increased human-machine collaboration",
-        "AI in creative fields like art, music, and writing",
-        "Continued research on safe and explainable AI"
-      ]
+      "image_description": "Timeline visualization showing AI evolution from current applications to future developments with ethical considerations",
+      "caption": "The next decade will see AI integration across all industries while addressing safety and ethical challenges",
+      "layout": "image_bottom"
     }
   ]
 }
-
 ```
 
-### Notes:
+### **Page Types and Requirements:**
 
-* The first object must be of type `"first_page"` and contain a title and description.
-* Subsequent slides must be of type `"content_page"` with:
+#### **Title Page (Required)**
+- `type`: `"first_page"`
+- `title`: Main presentation title
+- `description`: Brief overview of the presentation
 
-  * A `title`
-  * A list of 3–5 `bullet_points`
-* Keep the total number of slides between **4–6**
-* Keep it concise, informative, and suitable for a basic presentation.
+#### **Content Pages**
+- `type`: `"content_page"` or `"title_page"`
+- `title`: Slide title
+- `bullet_points`: List of 3–5 bullet points (can be `null`)
 
-**IMPORTANT**: Do not include any explanatory text, markdown formatting, or code blocks.
+#### **Image Pages**
+- `type`: `"image_page"` or `"image_content_page"`
+- `title`: Slide title
+- `image_description`: Detailed description of the visual content
+- `caption`: Long explanatory text about the image
+- `layout`: Choose from `"side_by_side"`, `"image_bottom"`, `"image_title_caption"`, or `"standard"`
 
+### **Guidelines:**
+- Keep total slides between **4–6** (excluding title page)
+- Mix content and image pages for visual variety
+- Use image pages for concepts that benefit from visual representation
+- Choose appropriate layouts based on content type
+- Keep content concise and presentation-ready
 
+**IMPORTANT**: Output only the JSON structure without any explanatory text, markdown formatting, or code blocks.

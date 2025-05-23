@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 import jwt
-from cachetools import cached, TTLCache
+from cachetools import TTLCache, cached
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.hash import pbkdf2_sha256
@@ -12,6 +12,7 @@ from apps.PPTMaker.src.app_config import (
     AUTH_ALGORITHM,
     AUTH_KEY,
 )
+
 # from libs.PPTMaker.platform.modules.bot.src.repository import users_repository
 from libs.utils.common.custom_logger import CustomLogger
 
@@ -22,10 +23,7 @@ log = CustomLogger("ChatbotAuthService")
 logger, listener = log.get_logger()
 listener.start()
 
-cache = TTLCache(
-    maxsize=100,
-    ttl=int(ACCESS_TOKEN_EXPIRE_MINUTES) * 60 * 60
-)
+cache = TTLCache(maxsize=100, ttl=int(ACCESS_TOKEN_EXPIRE_MINUTES) * 60 * 60)
 
 
 def create_access_token(user_id: str = "default", expires_delta: int = None) -> str:
@@ -62,7 +60,7 @@ def verify_access_token(token: Annotated[str, Depends(oauth2_scheme)]):
             raise credentials_exception
         token_data = {"username": username}
         logger.debug(f"Token validated successfully for user: {username}.")
-        
+
     except jwt.InvalidTokenError:
         logger.error("Invalid token error during token verification.")
         raise credentials_exception
@@ -71,12 +69,11 @@ def verify_access_token(token: Annotated[str, Depends(oauth2_scheme)]):
     return token_data
 
 
-
 @cached(cache)
 def authenticate_user(username, password):
     logger.debug(f"Authenticating user password for user {username}...")
     # user = users_repository.find_one({"username": username})
-    user= "user"
+    user = "user"
     if not user:
         logger.warning(f"Authentication failed: User {username} not found!!")
         return False

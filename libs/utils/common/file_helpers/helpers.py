@@ -15,6 +15,7 @@ def check_file_or_directory_exists(path: str):
         raise FileNotFoundError(f"{path} not found")
     return True
 
-def read_json_file(file_path:str):
+
+def read_json_file(file_path: str):
     with open(file_path, "r") as f:
         return json.load(f)

@@ -1,7 +1,10 @@
 import json
 import traceback
+
 from libs.PPTMaker.platform.modules.bot.src.constants import CONTENT_GENERATION_PROMPT
 from libs.PPTMaker.platform.modules.bot.src.models.content_models import (
+    ContentPage,
+    ImagePage,
     PresentationModel,
 )
 from libs.PPTMaker.platform.modules.bot.src.services.llm_service import LLMService
@@ -48,12 +51,23 @@ class PPTGenerator:
             )
             logger.info(f"Title slide {title_slide}")
             for content_slides in content.presentation_content:
-                slide = self.ppt_service.create_content_slide(
-                    content_slides.title, content_slides.bullet_points
-                )
-                logger.info(f"content slide {slide}")
+                if isinstance(content_slides, ContentPage):
+                    slide = self.ppt_service.create_content_slide(
+                        content_slides.title, content_slides.bullet_points
+                    )
+                    logger.info(f"content slide {slide}")
 
-            output_file = f"output/{title}.pptx".replace(" ","-")
+                elif isinstance(content_slides, ImagePage):
+                    sample_image_path = "static/images/sample_image.jpg"
+                    slide = self.ppt_service.add_image_slide(
+                        content_slides.title,
+                        sample_image_path,
+                        caption=content_slides.caption,
+                        layout_type="side_by_side",
+                    )
+                    logger.info("Image Slide")
+
+            output_file = f"output/{title}.pptx".replace(" ", "-")
             self.ppt_service.save_presentation(output_file)
             logger.info(f"Presentation saved to {output_file}")
             return True
@@ -66,7 +80,7 @@ class PPTGenerator:
 
 def main():
     service = PPTGenerator()
-    content = service.generate_content("Sustainable Technology")
+    content = service.generate_content("GenZ humor")
     service.create_presentation_from_content(content=content)
 
 

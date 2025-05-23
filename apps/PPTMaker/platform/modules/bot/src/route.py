@@ -3,8 +3,10 @@ from fastapi.responses import JSONResponse
 from starlette_context import context
 
 from apps.PPTMaker.auth.src.service import verify_access_token
-
-from libs.PPTMaker.platform.modules.bot.src.utils.limiter_util import RATE_LIMIT,limiter
+from libs.PPTMaker.platform.modules.bot.src.utils.limiter_util import (
+    RATE_LIMIT,
+    limiter,
+)
 from libs.utils.common.custom_logger import CustomLogger
 
 log = CustomLogger("FinancialChatbotRoute")
@@ -50,9 +52,7 @@ async def answer_financial_query(
     try:
         context["username"] = token_data.get("username")
         return JSONResponse(
-            content={
-                "message":"chat route accessed!!"
-            },
+            content={"message": "chat route accessed!!"},
             status_code=200,
         )
     except Exception as error:
