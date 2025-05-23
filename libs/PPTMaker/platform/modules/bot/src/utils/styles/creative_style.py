@@ -4,15 +4,16 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 
 from libs.PPTMaker.enums.colors_enum import ColorEnum
-from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
-    ColorPalette,
-    FontStyle,
-    PresentationStyleConfig,
-    StyleTheme,
-)
-from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
+
+# from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
+    PresentationStyleConfig,
+)
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
+    ColorPalette,
+    FontStyle,
+    StyleTheme,
 )
 
 
@@ -109,15 +110,15 @@ class CreativeStyle(BasePresentationStyle):
         return dims
 
 
-def main():
-    prs = Presentation()
-    style = CreativeStyle()
-    layout_manager = SlideLayoutManager(prs, style)
-    title_text = "Creative Energy"
-    subtitle_text = "Colorful ideas for bold presentations."
-    layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
-    prs.save("output/demo/creative-style.pptx")
+# def main():
+#     prs = Presentation()
+#     style = CreativeStyle()
+#     layout_manager = SlideLayoutManager(prs, style)
+#     title_text = "Creative Energy"
+#     subtitle_text = "Colorful ideas for bold presentations."
+#     layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
+#     prs.save("output/demo/creative-style.pptx")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

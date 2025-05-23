@@ -1,14 +1,19 @@
+from typing import Any, Dict
+
 from pptx import Presentation
+from pptx.util import Inches, Pt
 
 from libs.PPTMaker.enums.colors_enum import ColorEnum
-from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
-    ColorPalette,
-    PresentationStyleConfig,
-    StyleTheme,
-)
-from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
+
+# from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
+    PresentationStyleConfig,
+)
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
+    ColorPalette,
+    FontStyle,
+    StyleTheme,
 )
 
 
@@ -40,15 +45,15 @@ class DarkStyle(BasePresentationStyle):
         )
 
 
-def main():
-    prs = Presentation()
-    style = DarkStyle()
-    layout_manager = SlideLayoutManager(prs, style)
-    title_text = "Dark Mode Showcase"
-    subtitle_text = "Sleek. Modern. Focused."
-    layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
-    prs.save("output/demo/dark-style.pptx")
+# def main():
+#     prs = Presentation()
+#     style = DarkStyle()
+#     layout_manager = SlideLayoutManager(prs, style)
+#     title_text = "Dark Mode Showcase"
+#     subtitle_text = "Sleek. Modern. Focused."
+#     layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
+#     prs.save("output/demo/dark-style.pptx")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

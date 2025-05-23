@@ -8,11 +8,38 @@ from pptx.dml.color import RGBColor
 from pptx.util import Inches, Pt
 from pydantic import BaseModel, Field
 
-from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
     ColorPalette,
     FontStyle,
-    PresentationStyleConfig,
+    StyleTheme,
 )
+
+
+class PresentationStyleConfig(BaseModel):
+    """Pydantic model for presentation style configuration"""
+
+    theme: StyleTheme
+    title: str = Field(..., description="Display name for the style")
+    description: str = Field(..., description="Description of the style")
+    font_family_primary: str = Field(
+        default="Calibri", description="Primary font family"
+    )
+    font_family_secondary: str = Field(
+        default="Arial", description="Secondary font family"
+    )
+    use_gradients: bool = Field(
+        default=False, description="Whether to use gradient backgrounds"
+    )
+    border_style: str = Field(
+        default="none", description="Border style (none, solid, dashed)"
+    )
+    animation_level: str = Field(
+        default="subtle",
+        description="Animation intensity (none, subtle, moderate, high)",
+    )
+
+    class Config:
+        use_enum_values = True
 
 
 class BasePresentationStyle(ABC):

@@ -3,15 +3,15 @@ from typing import Dict
 from pptx import Presentation
 
 from libs.PPTMaker.enums.colors_enum import ColorEnum
-from libs.PPTMaker.platform.modules.bot.src.config.style_config import (
-    ColorPalette,
-    FontStyle,
-    PresentationStyleConfig,
-    StyleTheme,
-)
-from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
+
+# from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
+    PresentationStyleConfig,
+)
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
+    ColorPalette,
+    StyleTheme,
 )
 
 
@@ -44,15 +44,15 @@ class ClassyStyle(BasePresentationStyle):
         )
 
 
-def main():
-    prs = Presentation()
-    style = ClassyStyle()
-    layout_manager = SlideLayoutManager(prs, style)
-    title_text = "Classy Elegance"
-    subtitle_text = "Timeless style for premium content."
-    layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
-    prs.save("output/demo/classy-style.pptx")
+# def main():
+#     prs = Presentation()
+#     style = ClassyStyle()
+#     layout_manager = SlideLayoutManager(prs, style)
+#     title_text = "Classy Elegance"
+#     subtitle_text = "Timeless style for premium content."
+#     layout_manager.create_title_slide(title=title_text, subtitle=subtitle_text)
+#     prs.save("output/demo/classy-style.pptx")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
