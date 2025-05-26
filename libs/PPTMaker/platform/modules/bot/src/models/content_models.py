@@ -9,7 +9,7 @@ class ContentPage(BaseModel):
         "title_page",
     ]
     title: str
-    bullet_points: List[str] | None
+    points: List[str] | None
 
 
 class ImagePage(BaseModel):

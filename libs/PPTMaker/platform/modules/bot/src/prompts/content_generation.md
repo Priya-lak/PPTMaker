@@ -1,4 +1,4 @@
-## **Prompt Instruction**
+## **Instructions**
 
 You will be given a **topic**. Based on that topic, generate a structured presentation outline in **JSON format** with the following structure:
 
@@ -14,7 +14,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
 ### **Content Pages**
 - `type`: `"content_page"` or `"title_page"`
 - `title`: Slide title
-- `bullet_points`: List of 5-6 bullet points (can be `null`)
+- `points`: List of 5-6 bullet points (can be `null`)
 
 ### **Image Pages**
 - `type`: `"image_page"` or `"image_content_page"`
@@ -58,7 +58,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Renewable Energy Revolution",
-      "bullet_points": [
+      "points": [
         "Solar power costs have dropped 90% in the last decade, making it the cheapest electricity source in most regions",
         "Wind energy now generates enough electricity to power 130 million American homes annually",
         "Battery storage technology improvements enable 24/7 renewable energy availability even when sun and wind aren't present",
@@ -77,7 +77,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Individual Action Impact",
-      "bullet_points": [
+      "points": [
         "Transportation changes like electric vehicles and public transit can reduce personal carbon footprint by 2.3 tons CO2 annually",
         "Home energy efficiency improvements through insulation and smart thermostats cut emissions by 15-30% per household",
         "Dietary shifts toward plant-based meals just twice weekly saves equivalent of 1,200 miles of driving emissions",
@@ -110,7 +110,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Commercial Space Revolution",
-      "bullet_points": [
+      "points": [
         "SpaceX has reduced launch costs from $10,000 to $1,400 per kilogram through reusable rocket technology",
         "Private companies now handle 60% of all satellite deployments, democratizing access to space-based services",
         "Space tourism industry projected to reach $8 billion by 2030 with companies offering suborbital and orbital flights",
@@ -137,7 +137,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "International Space Collaboration",
-      "bullet_points": [
+      "points": [
         "International Space Station represents 15-nation partnership conducting over 3,000 scientific experiments since 2000",
         "Artemis Accords unite 28 countries in peaceful lunar exploration principles and resource sharing agreements",
         "European Space Agency's Copernicus program provides free Earth observation data to 150,000+ users globally for climate monitoring",
@@ -170,7 +170,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Workplace Mental Health Crisis",
-      "bullet_points": [
+      "points": [
         "Employee burnout affects 76% of workers, costing companies $125-190 billion annually in healthcare expenses",
         "Remote work isolation has increased anxiety and depression rates by 25% since 2020, particularly among younger employees",
         "Only 23% of organizations provide comprehensive mental health benefits despite proven ROI of $4 return per $1 invested",
@@ -189,7 +189,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Building Supportive Communities",
-      "bullet_points": [
+      "points": [
         "Peer support groups reduce hospitalization rates by 40% and improve long-term recovery outcomes for individuals with severe mental illness",
         "Schools implementing social-emotional learning programs see 23% improvement in academic performance and reduced behavioral problems",
         "Community mental health first aid training enables non-professionals to recognize crisis signs and provide initial support before professional help arrives",
@@ -222,7 +222,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "The Agriculture Challenge",
-      "bullet_points": [
+      "points": [
         "Global population will reach 9.7 billion by 2050, requiring 70% increase in food production on existing farmland",
         "Climate change threatens crop yields with extreme weather reducing harvests by 10-25% in major growing regions",
         "Industrial farming consumes 70% of freshwater globally while degrading soil at rates 10-40 times faster than regeneration",
@@ -249,7 +249,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Precision Agriculture Technology",
-      "bullet_points": [
+      "points": [
         "GPS-guided tractors and drones reduce pesticide use by 15-20% through targeted application only where needed",
         "Soil sensors monitor moisture, nutrients, and pH levels in real-time, optimizing irrigation and fertilizer timing for maximum efficiency",
         "Satellite imagery and AI algorithms predict crop diseases and pest infestations 2-3 weeks before visible symptoms appear",
@@ -290,7 +290,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Common Privacy Threats",
-      "bullet_points": [
+      "points": [
         "Social media platforms track users across 70% of top websites through embedded pixels and tracking cookies, even when logged out",
         "Smart home devices like voice assistants record conversations 24/7, storing audio data for up to 7 years in some cases",
         "Location tracking through smartphones creates detailed movement patterns used for targeted advertising and sold to data brokers",
@@ -309,7 +309,7 @@ You will be given a **topic**. Based on that topic, generate a structured presen
     {
       "type": "content_page",
       "title": "Privacy Protection Strategies",
-      "bullet_points": [
+      "points": [
         "Use privacy-focused browsers like Firefox with strict tracking protection enabled, reducing data collection by 85% compared to default settings",
         "Enable two-factor authentication on all accounts, which prevents 99.9% of automated attacks even with compromised passwords",
         "Regular privacy audits of social media accounts and app permissions help identify and revoke unnecessary data access permissions",

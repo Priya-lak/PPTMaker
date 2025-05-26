@@ -1,7 +1,3 @@
-import json
-import uuid
-from typing import Any, Dict, List, Optional, Tuple
-
 from pptx import Presentation
 
 from libs.PPTMaker.platform.modules.bot.src.models.slide_models import ShapePosition
@@ -46,9 +42,9 @@ class PPTXGenerator:
         """Create a title slide"""
         return self.layout_manager.create_title_slide(title, subtitle)
 
-    def create_content_slide(self, title, bullet_points):
+    def create_content_slide(self, title, points):
         """Create a content slide with bullet points"""
-        return self.layout_manager.create_content_slide(title, bullet_points)
+        return self.layout_manager.create_content_slide(title, points)
 
     def add_image_slide(
         self, title, image_path, position=None, caption="", layout_type="standard"
@@ -108,14 +104,14 @@ def create_sample_presentation():
     )
 
     # 2. Create content slide with bullet points
-    bullet_points = [
+    points = [
         "Create professional presentations programmatically",
         "Add various types of content (text, images, charts)",
         "Customize formatting and styling",
         "Automate repetitive presentation tasks",
         "Export to standard PowerPoint formats",
     ]
-    ppt_gen.create_content_slide("Key Features", bullet_points)
+    ppt_gen.create_content_slide("Key Features", points)
 
     # 3. Create image slide (note: you'll need to provide an actual image path)
     # ppt_gen.add_image_slide(

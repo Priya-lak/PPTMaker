@@ -63,7 +63,7 @@ class PPTGenerator:
             for content_slides in content.presentation_content:
                 if isinstance(content_slides, ContentPage):
                     self.ppt_service.create_content_slide(
-                        content_slides.title, content_slides.bullet_points
+                        content_slides.title, content_slides.points
                     )
                     logger.info(f"content slide")
 
@@ -78,7 +78,7 @@ class PPTGenerator:
                         caption=content_slides.caption,
                         layout_type=content_slides.layout,
                     )
-                    logger.info("Image Slide")
+                    logger.info(f"Image Slide {content_slides}")
 
             output_file = f"output/{title}.pptx".replace(" ", "-")
             self.ppt_service.save_presentation(output_file)
@@ -115,7 +115,7 @@ def main():
     ]
 
     theme = StyleTheme.DARK
-    topic = "Charles Darwin- evolution theory"
+    topic = "Eucliuds theory"
     service = PPTGenerator(style_theme=theme.value)
     content = service.generate_content(topic)
     service.create_presentation_from_content(content=content)
