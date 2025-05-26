@@ -1,11 +1,8 @@
 import json
 import traceback
-import uuid
 
 from libs.PPTMaker.platform.modules.bot.src.constants import CONTENT_GENERATION_PROMPT
 from libs.PPTMaker.platform.modules.bot.src.models.content_models import (
-    ContentPage,
-    ImagePage,
     PresentationModel,
 )
 from libs.PPTMaker.platform.modules.bot.src.services.image_search_service import (
@@ -21,7 +18,7 @@ from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import 
 )
 from libs.utils.common.custom_logger import CustomLogger
 
-log = CustomLogger("GroqLLMService", is_request=False)
+log = CustomLogger("PPTGeneratorService", is_request=False)
 
 logger, listener = log.get_logger()
 
@@ -29,10 +26,10 @@ listener.start()
 
 
 class PPTGenerator:
-    def __init__(self, style_theme: StyleTheme):
+    def __init__(self, style: StyleTheme, theme: str = None):
         self.llm_service = LLMService()
-        self.style = StyleFactory.create_style(style_theme)
-        self.ppt_service = PPTXGenerator(style=self.style)
+        self.style = StyleFactory.create_style(style)
+        self.ppt_service = PPTXGenerator(style=self.style, theme=theme)
         self.image_search_service = ImageSearchService()
 
     def generate_content(self, topic: str):
@@ -48,37 +45,18 @@ class PPTGenerator:
             messages, response_format={"type": "json_object"}
         )
         response = PresentationModel(**json.loads(response))
-        logger.info(f"Generated content {response}")
 
         return response
 
     def create_presentation_from_content(self, content: PresentationModel):
         logger.info("Creating presentation from content")
         try:
-            title = content.title_page.title
-            title_slide = self.ppt_service.create_title_slide(
-                title, content.title_page.description
-            )
-            logger.info(f"Title slide {title_slide}")
+            title = content.title
             for content_slides in content.presentation_content:
-                if isinstance(content_slides, ContentPage):
-                    self.ppt_service.create_content_slide(
-                        content_slides.title, content_slides.points
-                    )
-                    logger.info(f"content slide")
-
-                elif isinstance(content_slides, ImagePage):
-                    image_path = f"static/images/{uuid.uuid4()}.png"
-                    self.image_search_service.search_by_topic(
-                        content_slides.image_search_keyword, image_path
-                    )
-                    self.ppt_service.add_image_slide(
-                        content_slides.title,
-                        image_path,
-                        caption=content_slides.caption,
-                        layout_type=content_slides.layout,
-                    )
-                    logger.info(f"Image Slide {content_slides}")
+                logger.info(f"Content: {content_slides}")
+                self.ppt_service.layout_manager.create_slide(
+                    **content_slides.model_dump()
+                )
 
             output_file = f"output/{title}.pptx".replace(" ", "-")
             self.ppt_service.save_presentation(output_file)
@@ -114,9 +92,11 @@ def main():
         "Is Cereal a Soup? A Philosophical Debate",
     ]
 
-    theme = StyleTheme.DARK
-    topic = "Eucliuds theory"
-    service = PPTGenerator(style_theme=theme.value)
+    style = StyleTheme.DARK
+    topic = "Good girl's guide to murder: book talk"
+    service = PPTGenerator(
+        style=style.value, theme="static/templates/canva-portfolio.pptx"
+    )
     content = service.generate_content(topic)
     service.create_presentation_from_content(content=content)
 
