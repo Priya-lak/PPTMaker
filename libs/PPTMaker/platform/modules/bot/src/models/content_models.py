@@ -3,35 +3,70 @@ from typing import Annotated, List, Literal, Union
 from pydantic import BaseModel, Field
 
 
-class ContentPage(BaseModel):
-    type: Literal[
-        "content_page",
-        "title_page",
-    ]
+class TitleSlideModel(BaseModel):
+    layout: Literal["TITLE"]
     title: str
-    points: List[str] | None
 
 
-class ImagePage(BaseModel):
-    type: Literal[
-        "image_page",
-        "image_content_page",
-    ]
+class ContentSlideModel(BaseModel):
+    layout: Literal["TITLE_AND_CONTENT"]
     title: str
-    image_search_keyword: str
-    image_description: str
-    caption: str
-    layout: Literal["side_by_side", "image_bottom", "image_title_caption", "standard"]
+    points: List[str]
 
 
-class FirstPage(BaseModel):
-    type: Literal["first_page"]
+class SectionHeaderSlideModel(BaseModel):
+    layout: Literal["SECTION_HEADER"]
     title: str
-    description: str
+    subtitle: str
+
+
+class TwoContentSlideModel(BaseModel):
+    layout: Literal["TWO_CONTENT"]
+    title: str
+    left_points: List[str]
+    right_points: List[str]
+
+
+class ComparisonSlideModel(BaseModel):
+    layout: Literal["COMPARISON"]
+    title: str
+    left_heading: str
+    right_heading: str
+    left_points: List[str]
+    right_points: List[str]
+
+
+class TitleOnlySlideModel(BaseModel):
+    layout: Literal["TITLE_ONLY"]
+    title: str
+
+
+class BlankTitleSlideModel(BaseModel):
+    layout: Literal["BLANK"]
+    title: str
+    subtitle: str
+
+
+class ContentCaptionSlideModel(BaseModel):
+    layout: Literal["CONTENT_WITH_CAPTION"]
+    title: str
+    points: List[str]
 
 
 class PresentationModel(BaseModel):
-    title_page: FirstPage
+    title: str
     presentation_content: List[
-        Annotated[Union[ContentPage, ImagePage], Field(discriminator="type")]
+        Annotated[
+            Union[
+                ContentCaptionSlideModel,
+                BlankTitleSlideModel,
+                TitleOnlySlideModel,
+                ComparisonSlideModel,
+                TwoContentSlideModel,
+                SectionHeaderSlideModel,
+                ContentSlideModel,
+                TitleSlideModel,
+            ],
+            Field(discriminator="layout"),
+        ]
     ]

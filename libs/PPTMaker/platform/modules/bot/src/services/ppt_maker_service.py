@@ -1,10 +1,13 @@
 from pptx import Presentation
 
-from libs.PPTMaker.platform.modules.bot.src.models.slide_models import ShapePosition
+from libs.PPTMaker.platform.modules.bot.src.models.slide_models import (
+    ShapePosition,
+    SlideLayout,
+)
 from libs.PPTMaker.platform.modules.bot.src.utils.charts_util import ChartHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.images_util import ImageHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.shapes_util import ShapeHandler
-from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
+from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideBuilder
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
 )
@@ -21,30 +24,27 @@ listener.start()
 class PPTXGenerator:
     """Main presentation generator class that orchestrates all components"""
 
-    def __init__(self, style: BasePresentationStyle = None):
+    def __init__(self, style: BasePresentationStyle = None, theme: str = None):
         """Initialize presentation generator with optional custom styling"""
-        self.prs = Presentation()
+        self.prs = Presentation(theme)
         self.style = style or BasePresentationStyle()
+        self.prs.slides
 
         # Set slide dimensions
         self.prs.slide_width = self.style.get_dimension("slide_width")
         self.prs.slide_height = self.style.get_dimension("slide_height")
 
         # Initialize handlers
-        self.layout_manager = SlideLayoutManager(self.prs, self.style)
+        self.layout_manager = SlideBuilder(self.prs, self.style)
         self.image_handler = ImageHandler(self.style)
         self.chart_handler = ChartHandler(self.style)
         self.table_handler = TableHandler(self.style)
         self.shape_handler = ShapeHandler(self.style)
 
     # Slide creation methods (delegate to appropriate handlers)
-    def create_title_slide(self, title, subtitle=""):
+    def create_slide(self, layout: SlideLayout, **kwargs):
         """Create a title slide"""
-        return self.layout_manager.create_title_slide(title, subtitle)
-
-    def create_content_slide(self, title, points):
-        """Create a content slide with bullet points"""
-        return self.layout_manager.create_content_slide(title, points)
+        return self.layout_manager.create_slide(layout=layout, **kwargs)
 
     def add_image_slide(
         self, title, image_path, position=None, caption="", layout_type="standard"
