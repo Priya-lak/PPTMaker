@@ -38,7 +38,7 @@ class SlideLayoutManager:
 
         return slide
 
-    def create_content_slide(self, title: str, bullet_points: list[str]):
+    def create_content_slide(self, title: str, points: list[str]):
         """Create a slide with title and bullet points"""
         layout = self.prs.slide_layouts[SlideLayout.TITLE_AND_CONTENT]
         slide = self.prs.slides.add_slide(layout)
@@ -55,7 +55,7 @@ class SlideLayoutManager:
         text_frame = content_shape.text_frame
         text_frame.clear()
 
-        for i, point in enumerate(bullet_points):
+        for i, point in enumerate(points):
             p = text_frame.paragraphs[0] if i == 0 else text_frame.add_paragraph()
             p.text = point
             p.level = 0

@@ -86,6 +86,7 @@ class ImageHandler:
                 Inches(1), Inches(4.3), Inches(10), Inches(2.5)
             )
             caption_frame = caption_box.text_frame
+            caption_frame.wrap = True
             for line in caption.split("\n"):
                 p = caption_frame.add_paragraph()
                 p.text = line
@@ -113,6 +114,7 @@ class ImageHandler:
         """Format caption text consistently"""
         caption_frame = caption_box.text_frame
         caption_frame.clear()
+        caption_frame.word_wrap = True
         caption_frame.text = caption
         caption_paragraph = caption_frame.paragraphs[0]
         self.style.apply_font_style(caption_paragraph, "caption")
