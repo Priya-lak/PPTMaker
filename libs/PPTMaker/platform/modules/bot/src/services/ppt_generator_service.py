@@ -95,7 +95,7 @@ def main():
     style = StyleTheme.DARK
     topic = "Good girl's guide to murder: book talk"
     service = PPTGenerator(
-        style=style.value, theme="static/templates/canva-portfolio.pptx"
+        style=style.value, theme="static/templates/ion-boardroom.pptx"
     )
     content = service.generate_content(topic)
     service.create_presentation_from_content(content=content)
