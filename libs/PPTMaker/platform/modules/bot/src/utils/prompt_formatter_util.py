@@ -35,6 +35,6 @@ def params_to_prompt_string(params: ContentCustomizationParams) -> str:
         if value is not None:
             # Use .value if the attribute has it (likely an Enum), else use the value directly
             prompt_value = getattr(value, "value", value)
-            prompt_parts.append(f"{label}: {prompt_value}")
+            prompt_parts.append(f"**{label}**: {prompt_value}")
 
     return "\n".join(prompt_parts)

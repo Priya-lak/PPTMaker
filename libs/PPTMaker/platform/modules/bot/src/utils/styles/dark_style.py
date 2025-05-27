@@ -4,6 +4,7 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 
 from libs.PPTMaker.enums.colors_enum import ColorEnum
+from libs.PPTMaker.enums.themes_styles_enum import StylesEnum
 
 # from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
@@ -12,8 +13,6 @@ from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
 )
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
     ColorPalette,
-    FontStyle,
-    StyleTheme,
 )
 
 
@@ -22,7 +21,7 @@ class DarkStyle(BasePresentationStyle):
 
     def _get_default_config(self) -> PresentationStyleConfig:
         return PresentationStyleConfig(
-            theme=StyleTheme.DARK,
+            theme=StylesEnum.DARK,
             title="Dark",
             description="Modern dark theme with bright accents",
             font_family_primary="Segoe UI",
