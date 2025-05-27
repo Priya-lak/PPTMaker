@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from libs.PPTMaker.enums.themes_styles_enum import StylesEnum, ThemesEnum
 from libs.PPTMaker.platform.modules.bot.src.models.custom_content_models import (
     ContentCustomizationParams,
 )
@@ -17,7 +18,14 @@ class PresentationGenerationRequest(BaseModel):
         min_length=3,
         max_length=200,
     )
-
+    style: Optional[StylesEnum] = Field(
+        default=StylesEnum.CORPORATE,
+        description="Style of the presentation",
+    )
+    theme: Optional[ThemesEnum] = Field(
+        default=None,
+        description="Theme of the presentation",
+    )
     customization: Optional[ContentCustomizationParams] = Field(
         default_factory=ContentCustomizationParams,
         description="Content customization parameters",

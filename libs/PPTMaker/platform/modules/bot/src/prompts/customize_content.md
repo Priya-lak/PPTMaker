@@ -2,11 +2,14 @@
 
 You will receive additional parameters to customize the presentation content according to user preferences. Apply these parameters to modify the base content generation while maintaining the JSON structure and slide layout requirements from the main instructions.
 
+## **Parameters**
+{parameters}
+
 ---
 
-## **Core Customization Parameters**
+## **Customization Specification**
 
-### **TONE**: {tone}
+### **TONE**:
 Adjust the language style and voice throughout the presentation:
 - **Professional**: Formal language, industry terminology, authoritative voice, objective presentation
 - **Casual**: Conversational tone, everyday language, relatable examples, approachable style
@@ -15,14 +18,14 @@ Adjust the language style and voice throughout the presentation:
 - **Persuasive**: Compelling language, call-to-action focused, benefit-driven, motivational tone
 - **Technical**: Precise terminology, detailed specifications, process-oriented, expert-level language
 
-### **LENGTH**: {length}
+### **LENGTH**:
 Control the depth and detail of content:
 - **Brief**: Concise bullet points (1-2 lines each), essential information only, streamlined content
 - **Moderate**: Standard bullet points (2-3 lines each), balanced detail level, comprehensive coverage
 - **Descriptive**: Detailed bullet points (3-4 lines each), thorough explanations, rich context
 - **Comprehensive**: Extensive bullet points (4+ lines each), deep dive into topics, maximum detail
 
-### **RANGE**: {range}
+### **RANGE**:
 Determine the number of slides to generate:
 - **3-5 slides**: Focus on core concepts only, high-level overview
 - **6-9 slides**: Standard presentation length, balanced coverage
@@ -33,7 +36,7 @@ Determine the number of slides to generate:
 
 ## **Advanced Customization Parameters**
 
-### **TARGET_AUDIENCE**: {audience}
+### **TARGET_AUDIENCE**:
 Tailor content complexity and examples to the intended audience:
 - **Executives**: Strategic focus, ROI emphasis, high-level insights, decision-making frameworks
 - **Students**: Educational approach, learning objectives, step-by-step explanations, study-friendly format
@@ -41,7 +44,7 @@ Tailor content complexity and examples to the intended audience:
 - **Technical Experts**: Advanced concepts, detailed specifications, industry-specific terminology
 - **Children**: Simple language, visual concepts, engaging examples, age-appropriate content
 
-### **PRESENTATION_PURPOSE**: {purpose}
+### **PRESENTATION_PURPOSE**:
 Align content structure with the presentation goal:
 - **Educational**: Learning-focused, knowledge transfer, clear explanations, educational outcomes
 - **Sales Pitch**: Persuasive content, value propositions, problem-solution format, compelling CTAs
@@ -49,21 +52,21 @@ Align content structure with the presentation goal:
 - **Training**: Skill-building focus, practical applications, hands-on examples, implementation guides
 - **Conference Talk**: Thought leadership, industry insights, innovative ideas, engaging narratives
 
-### **DETAIL_LEVEL**: {detail_level}
+### **DETAIL_LEVEL**:
 Control the technical depth and complexity:
 - **High-level Overview**: Conceptual focus, minimal technical details, broad perspective
 - **Moderate Detail**: Balanced approach, some technical elements, practical insights
 - **Deep Dive**: Technical depth, detailed analysis, comprehensive exploration
 - **Expert Level**: Advanced concepts, specialized knowledge, industry-specific depth
 
-### **INCLUDE_EXAMPLES**: {examples}
+### **INCLUDE_EXAMPLES**:
 Specify example integration:
 - **None**: Theory and concepts only, no specific examples
 - **Minimal**: 1-2 key examples per major concept
 - **Moderate**: Regular examples throughout, balanced theory-practice mix
 - **Extensive**: Multiple examples per concept, case study heavy
 
-### **ENGAGEMENT_LEVEL**: {engagement}
+### **ENGAGEMENT_LEVEL**:
 Determine interactive and engaging elements:
 - **Informational**: Straightforward content delivery, minimal interaction prompts
 - **Interactive**: Discussion questions, audience participation cues, engagement hooks
@@ -71,19 +74,19 @@ Determine interactive and engaging elements:
 
 ## **Additional Customization Parameters**
 
-### **INDUSTRY**: {industry}
+### **INDUSTRY**:
 
-### **VISUAL_PREFERENCE**: {visual_preference}
+### **VISUAL_PREFERENCE**:
 
-### **DATA_FOCUS**: {data_focus}
+### **DATA_FOCUS**:
 
-### **REGIONAL_FOCUS**: {regional_focus}
+### **REGIONAL_FOCUS**:
 
-### **TIME_DURATION**: {time_duration}
+### **TIME_DURATION**:
 
-### **SPECIFIC_REQUIREMENTS**: {specific_requirements}
+### **SPECIFIC_REQUIREMENTS**:
 
-### **AVOID_TOPICS**: {AVOID_TOPICS}
+### **AVOID_TOPICS**:
 
 ---
 

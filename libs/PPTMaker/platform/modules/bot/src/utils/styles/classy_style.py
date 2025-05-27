@@ -3,6 +3,7 @@ from typing import Dict
 from pptx import Presentation
 
 from libs.PPTMaker.enums.colors_enum import ColorEnum
+from libs.PPTMaker.enums.themes_styles_enum import StylesEnum
 
 # from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
@@ -11,7 +12,6 @@ from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
 )
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
     ColorPalette,
-    StyleTheme,
 )
 
 
@@ -20,7 +20,7 @@ class ClassyStyle(BasePresentationStyle):
 
     def _get_default_config(self) -> PresentationStyleConfig:
         return PresentationStyleConfig(
-            theme=StyleTheme.CLASSY,
+            theme=StylesEnum.CLASSY,
             title="Classy",
             description="Elegant design with sophisticated color palette",
             font_family_primary="Georgia",

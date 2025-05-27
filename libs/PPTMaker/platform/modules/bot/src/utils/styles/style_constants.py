@@ -37,16 +37,3 @@ class ColorPalette:
         for field_name, value in self.__dict__.items():
             if isinstance(value, tuple) and len(value) == 3:
                 setattr(self, field_name, RGBColor(*value))
-
-
-class StyleTheme(str, Enum):
-    """Available presentation style themes"""
-
-    PROFESSIONAL = "professional"
-    MINIMALIST = "minimalist"
-    PUNK = "punk"
-    CLASSY = "classy"
-    CORPORATE = "corporate"
-    CREATIVE = "creative"
-    DARK = "dark"
-    VIBRANT = "vibrant"

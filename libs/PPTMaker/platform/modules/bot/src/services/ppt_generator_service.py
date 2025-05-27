@@ -1,7 +1,14 @@
 import json
 import traceback
 
-from libs.PPTMaker.platform.modules.bot.src.constants import CONTENT_GENERATION_PROMPT
+from libs.PPTMaker.enums.themes_styles_enum import StylesEnum
+from libs.PPTMaker.platform.modules.bot.src.constants import (
+    CONTENT_GENERATION_PROMPT,
+    CUSTOMIZE_CONTENT_PROMPT,
+)
+from libs.PPTMaker.platform.modules.bot.src.models.custom_content_models import (
+    ContentCustomizationParams,
+)
 from libs.PPTMaker.platform.modules.bot.src.models.slide_layout_models import (
     PresentationModel,
 )
@@ -13,9 +20,6 @@ from libs.PPTMaker.platform.modules.bot.src.services.ppt_maker_service import (
     PPTXGenerator,
 )
 from libs.PPTMaker.platform.modules.bot.src.utils.styles import StyleFactory
-from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
-    StyleTheme,
-)
 from libs.utils.common.custom_logger import CustomLogger
 
 log = CustomLogger("PPTGeneratorService", is_request=False)
@@ -26,19 +30,23 @@ listener.start()
 
 
 class PPTGenerator:
-    def __init__(self, style: StyleTheme, theme: str = None):
+    def __init__(self, style: StylesEnum, theme: str = None):
         self.llm_service = LLMService()
         self.style = StyleFactory.create_style(style)
         self.ppt_service = PPTXGenerator(style=self.style, theme=theme)
         self.image_search_service = ImageSearchService()
 
-    def generate_content(self, topic: str):
+    def generate_content(self, topic: str, custom_params: ContentCustomizationParams):
         messages = [
+            {"role": "system", "content": CONTENT_GENERATION_PROMPT},
+            {
+                "role": "system",
+                "content": CUSTOMIZE_CONTENT_PROMPT.format(custom_params),
+            },
             {
                 "role": "user",
                 "content": f"create presentation points on the topic: {topic}",
             },
-            {"role": "system", "content": CONTENT_GENERATION_PROMPT},
         ]
         logger.info("Calling LLM")
         response = self.llm_service.call_llm(
@@ -71,14 +79,14 @@ class PPTGenerator:
 
 def main():
     themes = [
-        StyleTheme.MINIMALIST,
-        StyleTheme.PROFESSIONAL,
-        StyleTheme.PUNK,
-        StyleTheme.CLASSY,
-        StyleTheme.CORPORATE,
-        StyleTheme.CREATIVE,
-        StyleTheme.DARK,
-        StyleTheme.VIBRANT,
+        StylesEnum.MINIMALIST,
+        StylesEnum.PROFESSIONAL,
+        StylesEnum.PUNK,
+        StylesEnum.CLASSY,
+        StylesEnum.CORPORATE,
+        StylesEnum.CREATIVE,
+        StylesEnum.DARK,
+        StylesEnum.VIBRANT,
     ]
 
     topics = [
@@ -92,7 +100,7 @@ def main():
         "Is Cereal a Soup? A Philosophical Debate",
     ]
 
-    style = StyleTheme.DARK
+    style = StylesEnum.DARK
     topic = "Music genres"
     service = PPTGenerator(
         style=style.value, theme="static/templates/blue-spheres.pptx"

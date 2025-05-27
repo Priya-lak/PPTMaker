@@ -13,7 +13,7 @@ from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
     ColorPalette,
     FontStyle,
-    StyleTheme,
+    StylesEnum,
 )
 
 
@@ -22,7 +22,7 @@ class CreativeStyle(BasePresentationStyle):
 
     def _get_default_config(self) -> PresentationStyleConfig:
         return PresentationStyleConfig(
-            theme=StyleTheme.CREATIVE,
+            theme=StylesEnum.CREATIVE,
             title="Creative",
             description="Artistic design with bold colors and creative typography",
             font_family_primary="Comic Sans MS",

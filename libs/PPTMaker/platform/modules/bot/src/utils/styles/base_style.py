@@ -1,24 +1,20 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Dict, Optional
 
-from pptx import Presentation
-from pptx.dml.color import RGBColor
 from pptx.util import Inches, Pt
 from pydantic import BaseModel, Field
 
+from libs.PPTMaker.enums.themes_styles_enum import StylesEnum
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
     ColorPalette,
     FontStyle,
-    StyleTheme,
 )
 
 
 class PresentationStyleConfig(BaseModel):
     """Pydantic model for presentation style configuration"""
 
-    theme: StyleTheme
+    theme: StylesEnum
     title: str = Field(..., description="Display name for the style")
     description: str = Field(..., description="Description of the style")
     font_family_primary: str = Field(
