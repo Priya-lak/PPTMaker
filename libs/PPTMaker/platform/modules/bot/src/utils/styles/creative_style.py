@@ -6,6 +6,7 @@ from pptx.util import Inches, Pt
 from libs.PPTMaker.enums.colors_enum import ColorEnum
 
 # from libs.PPTMaker.platform.modules.bot.src.utils.slides_util import SlideLayoutManager
+from libs.PPTMaker.enums.themes_styles_enum import StylesEnum
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
     PresentationStyleConfig,
@@ -13,7 +14,6 @@ from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.style_constants import (
     ColorPalette,
     FontStyle,
-    StylesEnum,
 )
 
 

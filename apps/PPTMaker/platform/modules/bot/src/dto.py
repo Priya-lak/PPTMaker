@@ -32,7 +32,7 @@ class PresentationGenerationRequest(BaseModel):
     )
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "topic": "Artificial Intelligence in Healthcare",
                 "customization": {
@@ -50,3 +50,7 @@ class PresentationGenerationRequest(BaseModel):
                 },
             }
         }
+
+
+class DownloadFileRequest(BaseModel):
+    filepath: str = None

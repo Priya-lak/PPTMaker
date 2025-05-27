@@ -6,6 +6,12 @@ from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     PresentationStyleConfig,
 )
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.classy_style import ClassyStyle
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.corporate_style import (
+    CorporateStyle,
+)
+from libs.PPTMaker.platform.modules.bot.src.utils.styles.creative_style import (
+    CreativeStyle,
+)
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.dark_style import DarkStyle
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.minimalist_style import (
     MinimalistStyle,
@@ -29,6 +35,8 @@ class StyleFactory:
         StylesEnum.CLASSY: ClassyStyle,
         StylesEnum.DARK: DarkStyle,
         StylesEnum.VIBRANT: VibrantStyle,
+        StylesEnum.CORPORATE: CorporateStyle,
+        StylesEnum.CREATIVE: CreativeStyle,
     }
 
     @classmethod
