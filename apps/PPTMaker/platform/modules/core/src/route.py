@@ -21,7 +21,7 @@ core_route = APIRouter(tags=["Core Routes"])
 
 @core_route.get("/")
 def root():
-    logger.info("Financial Chatbot app root endpoint accessed")
+    logger.info("PPT maker app root endpoint accessed")
     return JSONResponse(
         status_code=200,
         content={"success": True, "message": "Server is up and running 🚀🚀🚀"},

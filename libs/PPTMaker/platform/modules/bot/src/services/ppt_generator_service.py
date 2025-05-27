@@ -19,6 +19,9 @@ from libs.PPTMaker.platform.modules.bot.src.services.llm_service import LLMServi
 from libs.PPTMaker.platform.modules.bot.src.services.ppt_maker_service import (
     PPTXGenerator,
 )
+from libs.PPTMaker.platform.modules.bot.src.utils.prompt_formatter_util import (
+    params_to_prompt_string,
+)
 from libs.PPTMaker.platform.modules.bot.src.utils.styles import StyleFactory
 from libs.utils.common.custom_logger import CustomLogger
 
@@ -37,11 +40,15 @@ class PPTGenerator:
         self.image_search_service = ImageSearchService()
 
     def generate_content(self, topic: str, custom_params: ContentCustomizationParams):
+        formatted_custom_params = params_to_prompt_string(custom_params)
+        logger.info(f"custom params {formatted_custom_params}")
         messages = [
             {"role": "system", "content": CONTENT_GENERATION_PROMPT},
             {
                 "role": "system",
-                "content": CUSTOMIZE_CONTENT_PROMPT.format(custom_params),
+                "content": CUSTOMIZE_CONTENT_PROMPT.format(
+                    parameters=formatted_custom_params
+                ),
             },
             {
                 "role": "user",
@@ -56,7 +63,18 @@ class PPTGenerator:
 
         return response
 
-    def create_presentation_from_content(self, content: PresentationModel):
+    def _save_presentation(self, title):
+        try:
+            logger.info("Saving presentation to file")
+            output_file = f"temp/{title}.pptx".replace(" ", "-")
+            self.ppt_service.save_presentation(output_file)
+            logger.info(f"Presentation saved to {output_file}")
+            return output_file
+        except Exception as e:
+            logger.error(f"An error occurred while saving presentation {str(e)}")
+            raise e
+
+    def create_presentation_from_content(self, content: PresentationModel) -> str:
         logger.info("Creating presentation from content")
         try:
             title = content.title
@@ -65,11 +83,8 @@ class PPTGenerator:
                 self.ppt_service.layout_manager.create_slide(
                     **content_slides.model_dump()
                 )
-
-            output_file = f"output/{title}.pptx".replace(" ", "-")
-            self.ppt_service.save_presentation(output_file)
-            logger.info(f"Presentation saved to {output_file}")
-            return True
+            output_file = self._save_presentation(title=title)
+            return output_file
         except Exception as e:
             logger.error(
                 f"An error occurred while creating presentation {traceback.print_exc()}"
@@ -78,28 +93,6 @@ class PPTGenerator:
 
 
 def main():
-    themes = [
-        StylesEnum.MINIMALIST,
-        StylesEnum.PROFESSIONAL,
-        StylesEnum.PUNK,
-        StylesEnum.CLASSY,
-        StylesEnum.CORPORATE,
-        StylesEnum.CREATIVE,
-        StylesEnum.DARK,
-        StylesEnum.VIBRANT,
-    ]
-
-    topics = [
-        "What If Social Media Was Invented in the 1800s?",
-        "A Day in the Life of Your Smartphone's Battery",
-        "Why AI Would Totally Flunk Kindergarten",
-        "Superheroes and Their Totally Useless Powers",
-        "If Netflix Categories Were Honest",
-        "Why Cats Would Be Better CEOs",
-        "Could We Survive a Zombie Apocalypse... Using Only IKEA Furniture?",
-        "Is Cereal a Soup? A Philosophical Debate",
-    ]
-
     style = StylesEnum.DARK
     topic = "Music genres"
     service = PPTGenerator(

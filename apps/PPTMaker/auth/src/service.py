@@ -73,12 +73,13 @@ def verify_access_token(token: Annotated[str, Depends(oauth2_scheme)]):
 def authenticate_user(username, password):
     logger.debug(f"Authenticating user password for user {username}...")
     # user = users_repository.find_one({"username": username})
-    user = "user"
+    user = {"password": "123"}
     if not user:
         logger.warning(f"Authentication failed: User {username} not found!!")
         return False
 
-    is_verified = pbkdf2_sha256.verify(password, user.get("password"))
+    # is_verified = pbkdf2_sha256.verify(password, user.get("password"))
+    is_verified = user.get("password") == password
     if is_verified:
         logger.debug(f"User {username} authenticated successfully.")
     else:

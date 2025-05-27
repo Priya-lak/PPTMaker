@@ -103,10 +103,10 @@ class ContentCustomizationParams(BaseModel):
 
     class Config:
         # Allow field aliases (e.g., 'range' instead of 'slide_range')
-        allow_population_by_field_name = True
+        validate_by_name = True
 
         # Example for API documentation
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "tone": "professional",
                 "length": "moderate",
