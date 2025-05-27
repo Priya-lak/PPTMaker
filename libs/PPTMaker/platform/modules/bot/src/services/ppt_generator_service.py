@@ -2,7 +2,7 @@ import json
 import traceback
 
 from libs.PPTMaker.platform.modules.bot.src.constants import CONTENT_GENERATION_PROMPT
-from libs.PPTMaker.platform.modules.bot.src.models.content_models import (
+from libs.PPTMaker.platform.modules.bot.src.models.slide_layout_models import (
     PresentationModel,
 )
 from libs.PPTMaker.platform.modules.bot.src.services.image_search_service import (
@@ -93,9 +93,9 @@ def main():
     ]
 
     style = StyleTheme.DARK
-    topic = "Good girl's guide to murder: book talk"
+    topic = "Music genres"
     service = PPTGenerator(
-        style=style.value, theme="static/templates/ion-boardroom.pptx"
+        style=style.value, theme="static/templates/blue-spheres.pptx"
     )
     content = service.generate_content(topic)
     service.create_presentation_from_content(content=content)

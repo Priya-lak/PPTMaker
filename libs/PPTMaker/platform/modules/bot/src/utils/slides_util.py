@@ -5,7 +5,7 @@ from pptx.enum.text import PP_ALIGN
 from pptx.slide import Slide
 from pptx.util import Inches
 
-from libs.PPTMaker.platform.modules.bot.src.models.slide_models import SlideLayout
+from libs.PPTMaker.enums.layout_enum import SlideLayout
 from libs.PPTMaker.platform.modules.bot.src.utils.styles.base_style import (
     BasePresentationStyle,
 )
