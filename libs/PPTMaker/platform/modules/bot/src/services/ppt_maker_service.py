@@ -1,9 +1,6 @@
 from pptx import Presentation
 
-from libs.PPTMaker.platform.modules.bot.src.models.slide_models import (
-    ShapePosition,
-    SlideLayout,
-)
+from libs.PPTMaker.enums.layout_enum import SlideLayout
 from libs.PPTMaker.platform.modules.bot.src.utils.charts_util import ChartHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.images_util import ImageHandler
 from libs.PPTMaker.platform.modules.bot.src.utils.shapes_util import ShapeHandler
