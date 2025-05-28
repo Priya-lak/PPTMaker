@@ -50,8 +50,17 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             response_body = [chunk async for chunk in response.body_iterator]
             response.body_iterator = iterate_in_threadpool(iter(response_body))
-            if len(response_body) > 0:
-                response_body = response_body[0].decode()
+            content_type = response.headers.get("content-type", "")
+            is_text_response = any(
+                content_type.startswith(t)
+                for t in ["text/", "application/json", "application/xml"]
+            )
+            if is_text_response and response_body:
+                try:
+                    decoded_body = response_body[0].decode()
+                    logger.debug(f"Response body: {decoded_body}")
+                except UnicodeDecodeError:
+                    logger.warning("Response body could not be decoded as UTF-8.")
 
             extra = extra_details_for_req(
                 inspect,

@@ -19,12 +19,12 @@ from libs.PPTMaker.platform.modules.bot.src.utils.limiter_util import (
 )
 from libs.utils.common.custom_logger import CustomLogger
 
-log = CustomLogger("FinancialChatbotRoute")
+log = CustomLogger("PPTMakerCoreRoute")
 
 logger, listener = log.get_logger()
 listener.start()
 
-chatbot_route = APIRouter(prefix="/chatbot", tags=["Financial query chatbot"])
+chatbot_route = APIRouter(prefix="/chatbot", tags=["PPT maker chatbot"])
 
 
 @chatbot_route.get("/")
@@ -45,13 +45,40 @@ async def health_check():
     return JSONResponse(
         status_code=200,
         content={
-            "message": "Financial query chatbot health check path...",
+            "message": "PPTMaker health check path...",
             "success": True,
         },
     )
 
 
-@chatbot_route.post("/chat", dependencies=[Depends(verify_access_token)])
+@chatbot_route.post("/generate-content", dependencies=[Depends(verify_access_token)])
+@limiter.limit(RATE_LIMIT)
+async def generate_presentation(
+    request: Request,
+    request_data: PresentationGenerationRequest,
+    token_data=Depends(verify_access_token),
+):
+    try:
+        context["username"] = token_data.get("username")
+        output_file = create_customized_presentation(request_data)
+        return JSONResponse(
+            content={
+                "message": "presentation successfully created",
+                "success": True,
+                "output_file": output_file,
+            },
+            status_code=200,
+        )
+    except Exception as error:
+        logger.error(
+            f"An error occurred while creating presentation: {traceback.format_exc()}"
+        )
+        return JSONResponse(
+            content={"success": False, "error": str(error)}, status_code=500
+        )
+
+
+@chatbot_route.post("/generate-ppt", dependencies=[Depends(verify_access_token)])
 @limiter.limit(RATE_LIMIT)
 async def generate_presentation(
     request: Request,
