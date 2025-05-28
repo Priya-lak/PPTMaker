@@ -1,13 +1,18 @@
-# **Content Customization Instructions**
+# ** Content Generation Instructions**
 
-You will receive additional parameters to customize the presentation content according to user preferences. Apply these parameters to modify the base content generation while maintaining the JSON structure and slide layout requirements from the main instructions.
+You will generate section-wise content for presentations based on user-provided topics and customization parameters. Focus only on generating the core content - titles and substantive text content for each section. Do not include formatting elements, bullet points, or structural markup.
 
 ## **Parameters**
 {parameters}
 
 ---
 
-## **Customization Specification**
+## **Content Generation Specification**
+
+### **Output Format**
+For each section, provide:
+1. **Title**: Clear, descriptive title for the section
+2. **Content**: Main content for the section in paragraph or sentence format (no bullets, no formatting)
 
 ### **TONE**:
 Adjust the language style and voice throughout the presentation:
@@ -20,17 +25,17 @@ Adjust the language style and voice throughout the presentation:
 
 ### **LENGTH**:
 Control the depth and detail of content:
-- **Brief**: Concise bullet points (1-2 lines each), essential information only, streamlined content
-- **Moderate**: Standard bullet points (2-3 lines each), balanced detail level, comprehensive coverage
-- **Descriptive**: Detailed bullet points (3-4 lines each), thorough explanations, rich context
-- **Comprehensive**: Extensive bullet points (4+ lines each), deep dive into topics, maximum detail
+- **Brief**: Concise content (1-2 sentences per key point), essential information only
+- **Moderate**: Standard content depth (2-3 sentences per key point), balanced detail level
+- **Descriptive**: Detailed content (3-4 sentences per key point), thorough explanations
+- **Comprehensive**: Extensive content (4+ sentences per key point), deep dive into topics
 
 ### **RANGE**:
-Determine the number of slides to generate:
-- **3-5 slides**: Focus on core concepts only, high-level overview
-- **6-9 slides**: Standard presentation length, balanced coverage
-- **10-15 slides**: Detailed presentation, comprehensive topic exploration
-- **16+ slides**: Extensive coverage, workshop or training format
+Determine the number of sections to generate:
+- **3-5 sections**: Focus on core concepts only, high-level overview
+- **6-9 sections**: Standard presentation length, balanced coverage
+- **10-15 sections**: Detailed presentation, comprehensive topic exploration
+- **16+ sections**: Extensive coverage, workshop or training format
 
 ---
 
@@ -72,87 +77,38 @@ Determine interactive and engaging elements:
 - **Interactive**: Discussion questions, audience participation cues, engagement hooks
 - **Highly Engaging**: Multiple interaction points, audience polls, Q&A integration, dynamic elements
 
-## **Additional Customization Parameters**
+---
 
-### **INDUSTRY**:
+## **Content Generation Rules**
 
-### **VISUAL_PREFERENCE**:
-
-### **DATA_FOCUS**:
-
-### **REGIONAL_FOCUS**:
-
-### **TIME_DURATION**:
-
-### **SPECIFIC_REQUIREMENTS**:
-
-### **AVOID_TOPICS**:
+1. **No Formatting**: Do not include bullet points, numbered lists, bold text, italics, or any markup
+2. **Plain Text Only**: Generate content as natural sentences and paragraphs
+3. **Structure**: Each section should have a clear title and substantive content
+4. **Flow**: Ensure logical progression between sections
+5. **Completeness**: Each section's content should be self-contained and complete
 
 ---
 
-## **Content Application Guidelines**
+## **Example Output Format**
 
-### **Tone Application**:
-- Adjust vocabulary complexity and formality level
-- Modify sentence structure and length appropriately
-- Include tone-appropriate examples and analogies
-- Ensure consistent voice throughout all slides
+**section 1: Introduction to Advanced AI**
+Artificial Intelligence represents one of the most transformative technologies of our time, fundamentally changing how we approach complex problems across industries. This presentation explores advanced AI concepts that are shaping the future of technology and business. We will examine the technical foundations, practical applications, and emerging trends that define modern AI systems.
 
-### **Length Application**:
-- Scale bullet point detail according to length specification
-- Adjust number of points per slide based on depth requirement
-- Include supporting details and context as appropriate
-- Balance information density with readability
+**section 2: Types of Artificial Intelligence**
+AI systems can be categorized into three main types based on their capabilities and scope. Narrow AI, also known as weak AI, is designed to perform specific tasks and represents most current AI applications. General AI aims to match human cognitive abilities across all domains, while superintelligence would exceed human capabilities in all areas. Understanding these distinctions helps frame current AI developments and future possibilities.
 
-### **Audience Adaptation**:
-- Use appropriate technical vocabulary level
-- Include relevant examples and use cases
-- Adjust complexity of concepts presented
-- Consider audience's background knowledge and interests
-
-### **Purpose Alignment**:
-- Structure content flow to match presentation objective
-- Include appropriate calls-to-action or next steps
-- Emphasize key points relevant to the purpose
-- Design slide progression to support the goal
+**section 3: Machine Learning Fundamentals**
+Machine learning serves as the foundation for most modern AI systems, enabling computers to learn patterns from data without explicit programming. Supervised learning uses labeled data to train models for prediction and classification tasks. Unsupervised learning discovers hidden patterns in unlabeled data, while reinforcement learning optimizes decision-making through trial and error feedback.
 
 ---
 
-## **Parameter Integration Rules**
+## **Parameter Integration Guidelines**
 
-1. **Hierarchy**: When parameters conflict, prioritize in this order:
-   - Target Audience → Presentation Purpose → Tone → Detail Level → Length
+- Apply tone consistently across all section content
+- Adjust content depth based on length and detail level parameters
+- Tailor language complexity to target audience
+- Align content structure with presentation purpose
+- Include examples as specified by the examples parameter
+- Maintain engagement level throughout the presentation
 
-2. **Consistency**: Maintain parameter application across all slides in the presentation
-
-3. **Balance**: Ensure customizations enhance rather than compromise slide layout requirements
-
-4. **Quality**: Never sacrifice content accuracy or logical flow for parameter compliance
-
-5. **Flexibility**: Adapt parameters intelligently based on topic nature and content requirements
-
----
-
-## **Example Parameter Applications**
-
-**Example 1**: Professional + Technical Experts + Deep Dive + 10-15 slides
-- Use industry-specific terminology and advanced concepts
-- Include detailed technical specifications and processes
-- Maintain formal, authoritative tone throughout
-- Provide comprehensive coverage with expert-level insights
-
-**Example 2**: Casual + Students + Educational + Brief + 6-9 slides
-- Use conversational, approachable language
-- Include relatable examples and learning aids
-- Keep concepts accessible and engaging
-- Focus on key learning objectives with clear explanations
-
-**Example 3**: Persuasive + Executives + Sales Pitch + Moderate + 3-5 slides
-- Emphasize business value and ROI
-- Use compelling, action-oriented language
-- Focus on strategic benefits and competitive advantages
-- Include strong calls-to-action and decision frameworks
-
----
-
-Apply these customization parameters while maintaining the structural integrity and JSON format requirements specified in the main content generation instructions. The goal is to create presentations that are perfectly tailored to the user's specific needs while remaining professional, accurate, and well-organized.
+Generate section content that is ready for formatting in a separate step, focusing purely on delivering clear, well-structured information that matches the specified parameters.

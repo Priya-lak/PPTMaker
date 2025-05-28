@@ -78,7 +78,7 @@ async def generate_presentation(
         )
 
 
-@chatbot_route.post("/generate-ppt", dependencies=[Depends(verify_access_token)])
+@chatbot_route.post("/create-ppt", dependencies=[Depends(verify_access_token)])
 @limiter.limit(RATE_LIMIT)
 async def generate_presentation(
     request: Request,
