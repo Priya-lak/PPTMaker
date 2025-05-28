@@ -4,11 +4,10 @@ import traceback
 from typing import Optional
 
 from libs.PPTMaker.platform.modules.bot.src.constants import (
-    CONTENT_GENERATION_PROMPT,
     CUSTOMIZE_CONTENT_PROMPT,
 )
 from libs.PPTMaker.platform.modules.bot.src.models.custom_content_models import (
-    ContentCustomizationParams,
+    ContentGenerationParams,
 )
 from libs.PPTMaker.platform.modules.bot.src.models.slide_layout_models import (
     PresentationModel,
@@ -34,7 +33,7 @@ class ContentGenerationService:
         self.llm_service = LLMService()
 
     def generate_content(
-        self, topic: str, custom_params: Optional[ContentCustomizationParams] = None
+        self, topic: str, custom_params: Optional[ContentGenerationParams] = None
     ) -> PresentationModel:
         """
         Generate presentation content for a given topic with optional customization.
@@ -64,7 +63,7 @@ class ContentGenerationService:
             raise e
 
     def _build_messages(
-        self, topic: str, custom_params: Optional[ContentCustomizationParams]
+        self, topic: str, custom_params: Optional[ContentGenerationParams]
     ) -> list:
         """Build the message array for LLM request."""
         messages = []
@@ -96,7 +95,5 @@ class ContentGenerationService:
 if __name__ == "__main__":
     service = ContentGenerationService()
 
-    custom_params = ContentCustomizationParams(
-        tone="professional", length="comprehensive", range="3-5"
-    )
+    custom_params = ContentGenerationParams(tone="professional", length="comprehensive")
     custom_content = service.generate_content("Advanced AI Concepts", custom_params)

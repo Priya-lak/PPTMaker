@@ -1,21 +1,48 @@
 # **Instructions**
 
-You will be given a **topic**. Based on that topic, generate a structured presentation in JSON format using the **PresentationModel** schema below. Each slide must adhere to one of the specified layout models.
+You will be given content. Based on that descriptive content, generate a structured presentation in JSON format using the **PresentationModel** schema below. Each slide must adhere to one of the specified layout models. Be sure to use only the content given to you inside as values in the structure. Try to match the content as close as possible.
+
+**CRITICAL CONTENT RULE: You MUST use the exact text, phrases, and information from the provided content. Do NOT rephrase, summarize, or rewrite the content. Extract and organize the existing text directly into the appropriate slide layouts.**
+---
+
+## **CRITICAL: Valid Slide Layout Options**
+
+Each slide must use EXACTLY ONE of these layout values. **DO NOT CREATE OR USE ANY OTHER LAYOUT NAMES:**
+
+* `TITLE` - Title slide only
+* `TITLE_AND_CONTENT` - Content with bullet points
+* `SECTION_HEADER` - Section heading with subtitle
+* `TWO_CONTENT` - Two-column content
+* `COMPARISON` - Side-by-side comparison with labeled sections
+* `TITLE_ONLY` - Title only (no content)
+* `BLANK` - Blank slide with title and subtitle
+* `CONTENT_WITH_CAPTION` - Content + explanatory points
+
+**IMPORTANT:** You MUST use these exact layout names. Do not create variations like "BLEND", "MIXED", "CUSTOM", or any other layout name not listed above.
 
 ---
 
-## **Slide Layout Options (Enum: SlideLayout)**
+## **Content Preservation Guidelines:**
 
-Each slide must conform to one of these layouts:
+- **EXTRACT, DON'T CREATE**: Pull text directly from the provided content
+- **PRESERVE ORIGINAL WORDING**: Use the exact phrases and terminology from the source
+- **MAINTAIN FACTUAL ACCURACY**: Don't add information not present in the original content
+- **ORGANIZE LOGICALLY**: Structure the existing content into appropriate slide layouts
+- **USE EXISTING HEADINGS**: Extract section titles and headings directly from the content
+- **KEEP ORIGINAL DETAILS**: Include specific data, numbers, and examples as provided
 
-* `TITLE`: Title slide
-* `TITLE_AND_CONTENT`: Content with bullet points
-* `SECTION_HEADER`: Section heading with subtitle
-* `TWO_CONTENT`: Two-column content
-* `COMPARISON`: Side-by-side comparison with labeled sections
-* `TITLE_ONLY`: Title only (no content)
-* `BLANK`: Blank slide with title and subtitle
-* `CONTENT_WITH_CAPTION`: Content + long caption paragraph
+---
+
+## **Layout Usage Guidelines:**
+
+* **TITLE**: Use for the opening slide of your presentation
+* **TITLE_AND_CONTENT**: Use for slides with a list of related points or bullet items
+* **SECTION_HEADER**: Use to introduce new sections or major topic transitions
+* **TWO_CONTENT**: Use when you have two distinct but related sets of information
+* **COMPARISON**: Use specifically for comparing two things side-by-side with clear labels
+* **TITLE_ONLY**: Use for transition slides or emphasis slides with just a title
+* **BLANK**: Use for slides that need visual content or diagrams (title + subtitle only)
+* **CONTENT_WITH_CAPTION**: Use for explanatory content that needs detailed context
 
 ---
 
@@ -30,6 +57,97 @@ Each slide must conform to one of these layouts:
 * Avoid repeating slide types too often
 * Organize content logically and clearly
 
+---
+
+## **JSON Output Requirements**
+
+1. **Return ONLY valid JSON** - no markdown formatting, no backticks, no explanatory text
+2. **Use only the 8 layout types listed above** - do not invent new layouts
+3. **Each slide object must have the exact field names** shown in the schema
+4. **All strings must be properly quoted**
+5. **Arrays must contain strings only**
+
+---
+
+## **Schema Definition**
+
+```json
+{
+  "title": "string",
+  "presentation_content": [
+    // Array of slide objects, each with one of these exact structures:
+
+    // TITLE slide
+    {
+      "layout": "TITLE",
+      "title": "string"
+    },
+
+    // TITLE_AND_CONTENT slide
+    {
+      "layout": "TITLE_AND_CONTENT",
+      "title": "string",
+      "points": ["string", "string", ...]
+    },
+
+    // SECTION_HEADER slide
+    {
+      "layout": "SECTION_HEADER",
+      "title": "string",
+      "subtitle": "string"
+    },
+
+    // TWO_CONTENT slide
+    {
+      "layout": "TWO_CONTENT",
+      "title": "string",
+      "left_points": ["string", "string", ...],
+      "right_points": ["string", "string", ...]
+    },
+
+    // COMPARISON slide
+    {
+      "layout": "COMPARISON",
+      "title": "string",
+      "left_heading": "string",
+      "right_heading": "string",
+      "left_points": ["string", "string", ...],
+      "right_points": ["string", "string", ...]
+    },
+
+    // TITLE_ONLY slide
+    {
+      "layout": "TITLE_ONLY",
+      "title": "string"
+    },
+
+    // BLANK slide
+    {
+      "layout": "BLANK",
+      "title": "string",
+      "subtitle": "string"
+    },
+
+    // CONTENT_WITH_CAPTION slide
+    {
+      "layout": "CONTENT_WITH_CAPTION",
+      "title": "string",
+      "points": ["string", "string", ...]
+    }
+  ]
+}
+```
+---
+**Content Processing Instructions:**
+
+1. Read through the entire provided content first
+2. Identify natural sections, headings, and divisions
+3. Extract titles and headings exactly as written
+4. Copy bullet points, lists, and paragraphs verbatim
+5. Organize into slides following the logical flow of the original content
+6. Choose layouts that best fit how the content is naturally structured
+7. Don't split content unnecessarily - keep related information together
+8. Maintain the original sequence and order of information
 ---
 
 ## **Output Format**
@@ -456,3 +574,12 @@ These examples demonstrate various structural approaches:
 - **Example 5**: Starts with fundamentals, progresses to advanced concepts, ends with actionable steps
 
 Notice how different slide types appear in various positions, showing flexibility in presentation flow and structure.
+---
+
+## **Final Reminders**
+
+- **NEVER** use layout names other than the 8 specified above
+- **ALWAYS** include all required fields for each layout type
+- **ENSURE** your JSON is valid and properly formatted
+- **MATCH** the content structure to the appropriate layout type
+- **START** with a TITLE slide and use a mix of layout types throughout
