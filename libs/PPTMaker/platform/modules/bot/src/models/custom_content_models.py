@@ -1,17 +1,17 @@
-from enum import Enum
-from typing import Literal, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from libs.PPTMaker.enums.content_gen_enums import *
 
 
-class ContentCustomizationParams(BaseModel):
+class ContentGenerationParams(BaseModel):
     """
     Parameters for customizing presentation content generation
+    Content-focused parameters that affect the substance and style of the presentation
     """
 
-    # Core Parameters
+    # Core Content Parameters
     tone: Optional[ToneEnum] = Field(
         default=ToneEnum.PROFESSIONAL,
         description="Language style and voice for the presentation",
@@ -21,13 +21,7 @@ class ContentCustomizationParams(BaseModel):
         default=LengthEnum.MODERATE, description="Depth and detail level of content"
     )
 
-    slide_range: Optional[SlideRangeEnum] = Field(
-        default=SlideRangeEnum.RANGE_6_9,
-        description="Number of slides to generate",
-        alias="range",
-    )
-
-    # Advanced Parameters
+    # Audience and Purpose
     target_audience: Optional[TargetAudienceEnum] = Field(
         default=TargetAudienceEnum.GENERAL_PUBLIC,
         description="Intended audience for content complexity and examples",
@@ -53,20 +47,10 @@ class ContentCustomizationParams(BaseModel):
         description="Level of interactive and engaging elements",
     )
 
-    # Extended Parameters
+    # Domain and Context
     industry: Optional[IndustryEnum] = Field(
         default=IndustryEnum.GENERAL,
         description="Industry or domain focus for specialized content",
-    )
-
-    visual_preference: Optional[VisualPreferenceEnum] = Field(
-        default=VisualPreferenceEnum.BALANCED,
-        description="Visual layout and content balance preference",
-    )
-
-    data_focus: Optional[DataFocusEnum] = Field(
-        default=DataFocusEnum.MODERATE_STATS,
-        description="Emphasis on statistics, charts, and data visualization",
     )
 
     regional_focus: Optional[RegionalFocusEnum] = Field(
@@ -79,7 +63,7 @@ class ContentCustomizationParams(BaseModel):
         description="Expected presentation delivery time",
     )
 
-    # Additional Customization Fields
+    # Content Customization
     specific_requirements: Optional[str] = Field(
         default=None,
         description="Any specific requirements or preferences not covered by other parameters",
@@ -102,29 +86,19 @@ class ContentCustomizationParams(BaseModel):
     )
 
     class Config:
-        # Allow field aliases (e.g., 'range' instead of 'slide_range')
-        validate_by_name = True
-
-        # Example for API documentation
         json_schema_extra = {
             "example": {
                 "tone": "professional",
                 "length": "moderate",
-                "range": "6-9",
                 "target_audience": "executives",
                 "presentation_purpose": "sales_pitch",
                 "detail_level": "moderate_detail",
                 "include_examples": "moderate",
                 "engagement_level": "interactive",
                 "industry": "technology",
-                "visual_preference": "balanced",
-                "data_focus": "moderate_stats",
                 "regional_focus": "global",
                 "time_duration": "30_min",
                 "include_call_to_action": True,
                 "branded_content": True,
             }
         }
-
-
-# Request model that combines topic with customization parameters

@@ -6,12 +6,14 @@ from starlette_context import context
 
 from apps.PPTMaker.auth.src.service import verify_access_token
 from apps.PPTMaker.platform.modules.bot.src.dto import (
+    ContentGenerationRequest,
     DownloadFileRequest,
     PresentationGenerationRequest,
 )
 from apps.PPTMaker.platform.modules.bot.src.service import (
     create_customized_presentation,
     download_presentation_service,
+    generate_presentation_content,
 )
 from libs.PPTMaker.platform.modules.bot.src.utils.limiter_util import (
     RATE_LIMIT,
@@ -55,17 +57,17 @@ async def health_check():
 @limiter.limit(RATE_LIMIT)
 async def generate_presentation(
     request: Request,
-    request_data: PresentationGenerationRequest,
+    request_data: ContentGenerationRequest,
     token_data=Depends(verify_access_token),
 ):
     try:
         context["username"] = token_data.get("username")
-        output_file = create_customized_presentation(request_data)
+        response = generate_presentation_content(request_data)
         return JSONResponse(
             content={
-                "message": "presentation successfully created",
+                "message": "generated presentation content",
                 "success": True,
-                "output_file": output_file,
+                "content": response,
             },
             status_code=200,
         )
