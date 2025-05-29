@@ -1,9 +1,9 @@
 from libs.utils.common.file_helpers.helpers import read_file
 
-content_generation_instructions_path = (
-    "libs/PPTMaker/platform/modules/bot/src/prompts/content_generation.md"
+layout_generation_instructions_path = (
+    "libs/PPTMaker/platform/modules/bot/src/prompts/layout_gen.md"
 )
-LAYOUT_GENERATION_PROMPT = read_file(content_generation_instructions_path)
+LAYOUT_GENERATION_PROMPT = read_file(layout_generation_instructions_path)
 
 
 customize_content_instructions_path = (
