@@ -1,7 +1,7 @@
 import json
 import traceback
 
-from libs.PPTMaker.enums.themes_styles_enum import StylesEnum
+from libs.PPTMaker.enums.themes_styles_enum import StylesEnum, ThemesEnum
 from libs.PPTMaker.platform.modules.bot.src.constants import LAYOUT_GENERATION_PROMPT
 from libs.PPTMaker.platform.modules.bot.src.models.custom_layout_model import (
     SlideLayoutParams,
@@ -30,10 +30,10 @@ listener.start()
 
 
 class PPTGenerator:
-    def __init__(self, style: StylesEnum, theme: str = None):
+    def __init__(self, style: StylesEnum, theme: ThemesEnum = None):
         self.llm_service = LLMService()
         self.style = StyleFactory.create_style(style)
-        self.ppt_service = PPTXGenerator(style=self.style, theme=theme)
+        self.ppt_service = PPTXGenerator(style=self.style, theme=theme.template_path)
         self.image_search_service = ImageSearchService()
 
     def generate_presentation_layout(

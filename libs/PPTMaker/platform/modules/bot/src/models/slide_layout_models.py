@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 class TitleSlideModel(BaseModel):
     layout: Literal["TITLE"]
+    subtitle: str
     title: str
 
 
@@ -59,7 +60,6 @@ class PresentationModel(BaseModel):
         Annotated[
             Union[
                 ContentCaptionSlideModel,
-                BlankTitleSlideModel,
                 TitleOnlySlideModel,
                 ComparisonSlideModel,
                 TwoContentSlideModel,
