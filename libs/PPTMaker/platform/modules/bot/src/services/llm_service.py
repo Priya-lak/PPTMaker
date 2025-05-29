@@ -34,7 +34,7 @@ class LLMService:
             response_format=response_format,
         )
         response_content = response.choices[0].message.content
-        logger.info(f"LLM response {response_content}")
+        # logger.info(f"LLM response {response_content}")
         return response_content
 
 
