@@ -94,7 +94,7 @@ const PPTSettings: React.FC = () => {
               </label>
               <select
                 value={state.layoutCustomization.slide_range}
-                onChange={(e) => updateLayoutCustomization({ slide_range: e.target.value })}
+                onChange={(e) => updateLayoutCustomization({slide_range: e.target.value })}
                 className="w-full px-3 py-2 bg-purple-900/50 border border-purple-600/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="5-8">5-8 slides</option>

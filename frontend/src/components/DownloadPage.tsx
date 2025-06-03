@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useApp } from '../contexts/AppContext';
 import { apiService } from '../services/api';
@@ -37,32 +36,32 @@ const DownloadPage: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto text-center">
-      <div className="glass-effect rounded-3xl p-8 hover-lift">
+      <div className="card-dark rounded-xl p-8 hover-lift">
         <div className="mb-8">
           <div className="text-6xl mb-4 cute-bounce">🎉</div>
-          <h2 className="text-3xl font-bold gradient-text mb-4">
+          <h2 className="text-3xl font-bold text-white mb-2">
             Your Presentation is Ready!
           </h2>
-          <p className="text-purple-200 text-lg">
+          <p className="text-gray-400 text-lg">
             Your PowerPoint presentation has been generated successfully
           </p>
         </div>
 
         {state.error && (
-          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6">
-            <p className="text-red-200">{state.error}</p>
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+            <p className="text-red-300">{state.error}</p>
           </div>
         )}
 
-        <div className="bg-purple-800/30 rounded-lg p-6 border border-purple-600/30 mb-8">
+        <div className="card-dark rounded-lg p-6 border border-gray-700 mb-8">
           <h3 className="text-lg font-semibold text-white mb-3">Presentation Details</h3>
-          <div className="space-y-2 text-purple-200 text-left">
-            <p><span className="font-medium">Topic:</span> {state.topic}</p>
-            <p><span className="font-medium">Theme:</span> {state.layoutCustomization.theme.replace('-', ' ')}</p>
-            <p><span className="font-medium">Slides:</span> {state.layoutCustomization.slide_range}</p>
-            <p><span className="font-medium">Style:</span> {state.layoutCustomization.visual_preference.replace('_', ' ')}</p>
+          <div className="space-y-2 text-gray-400 text-left">
+            <p><span className="font-medium text-gray-300">Topic:</span> {state.topic}</p>
+            <p><span className="font-medium text-gray-300">Theme:</span> {state.layoutCustomization.theme.replace('-', ' ')}</p>
+            <p><span className="font-medium text-gray-300">Slides:</span> {state.layoutCustomization.slide_range}</p>
+            <p><span className="font-medium text-gray-300">Style:</span> {state.layoutCustomization.visual_preference.replace('_', ' ')}</p>
             {state.outputFile && (
-              <p><span className="font-medium">File:</span> {state.outputFile}</p>
+              <p><span className="font-medium text-gray-300">File:</span> {state.outputFile}</p>
             )}
           </div>
         </div>
@@ -71,10 +70,10 @@ const DownloadPage: React.FC = () => {
           <button
             onClick={handleDownload}
             disabled={state.isLoading}
-            className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 ${
+            className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-200 ${
               state.isLoading
-                ? 'bg-purple-700/50 text-purple-300 cursor-not-allowed'
-                : 'gradient-purple hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105 text-white'
+                ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                : 'button-primary hover:scale-[1.02]'
             }`}
           >
             {state.isLoading ? (
@@ -89,14 +88,14 @@ const DownloadPage: React.FC = () => {
 
           <button
             onClick={handleCreateNew}
-            className="w-full px-6 py-3 bg-purple-700/50 hover:bg-purple-700 text-purple-200 hover:text-white rounded-lg transition-all duration-300 border border-purple-600/30"
+            className="w-full px-6 py-3 button-secondary rounded-lg transition-all duration-200"
           >
             🆕 Create New Presentation
           </button>
         </div>
 
-        <div className="mt-8 text-purple-300 text-sm">
-          <p>💝 Thank you for using AI PPT Maker!</p>
+        <div className="mt-8 text-gray-500 text-sm">
+          <p>Thank you for using AI PPT Maker!</p>
           <p>Your presentation will be downloaded as a .pptx file</p>
         </div>
       </div>

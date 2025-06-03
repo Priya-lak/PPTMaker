@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AppProvider, useApp } from '../contexts/AppContext';
 import ProgressIndicator from '../components/ProgressIndicator';
@@ -26,8 +25,8 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4">
-      <div className="container mx-auto">
+    <div className="min-h-screen py-8 px-4 bg-gray-900">
+      <div className="container mx-auto max-w-6xl">
         <ProgressIndicator />
         {renderCurrentStep()}
       </div>

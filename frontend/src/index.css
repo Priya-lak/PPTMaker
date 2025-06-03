@@ -90,26 +90,81 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 text-white min-h-screen;
+    @apply bg-gray-900 text-gray-100 min-h-screen;
+    background: #0a0a0b;
   }
 }
 
 @layer utilities {
   .gradient-purple {
-    background: linear-gradient(135deg, #6b46c1 0%, #7c3aed 25%, #8b5cf6 50%, #a855f7 75%, #c084fc 100%);
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #a855f7, #c084fc, #ddd6fe);
+    background: linear-gradient(135deg, #a855f7, #c084fc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .glass-effect {
-    background: rgba(139, 92, 246, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(17, 17, 19, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(55, 65, 81, 0.3);
+  }
+
+  .card-dark {
+    background: #111113;
+    border: 1px solid #1f2937;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .input-dark {
+    background: #1f2937;
+    border: 1px solid #374151;
+    color: #f9fafb;
+  }
+
+  .input-dark:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    outline: none;
+  }
+
+  .button-primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+    border: none;
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  .button-primary:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .button-secondary {
+    background: #374151;
+    border: 1px solid #4b5563;
+    color: #d1d5db;
+    transition: all 0.2s ease;
+  }
+
+  .button-secondary:hover {
+    background: #4b5563;
+    color: #f9fafb;
+    border-color: #6b7280;
   }
 
   .cute-bounce {
@@ -121,19 +176,10 @@
       transform: translateY(0);
     }
     40% {
-      transform: translateY(-10px);
+      transform: translateY(-8px);
     }
     60% {
-      transform: translateY(-5px);
+      transform: translateY(-4px);
     }
-  }
-
-  .hover-lift {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
   }
 }
