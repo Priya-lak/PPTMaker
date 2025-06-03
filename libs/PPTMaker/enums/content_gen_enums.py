@@ -27,7 +27,7 @@ class SlideRangeEnum(str, Enum):
 class TargetAudienceEnum(str, Enum):
     EXECUTIVES = "executives"
     STUDENTS = "students"
-    GENERAL_PUBLIC = "general_public"
+    GENERAL_PUBLIC = "general"
     TECHNICAL_EXPERTS = "technical_experts"
     CHILDREN = "children"
     PROFESSIONALS = "professionals"
@@ -46,8 +46,8 @@ class PresentationPurposeEnum(str, Enum):
 
 
 class DetailLevelEnum(str, Enum):
-    HIGH_LEVEL_OVERVIEW = "high_level_overview"
-    MODERATE_DETAIL = "moderate_detail"
+    HIGH_LEVEL_OVERVIEW = "overview"
+    MODERATE_DETAIL = "intermediate"
     DEEP_DIVE = "deep_dive"
     EXPERT_LEVEL = "expert_level"
 

@@ -58,10 +58,10 @@ async def health_check():
 async def generate_presentation(
     request: Request,
     request_data: ContentGenerationRequest,
-    token_data=Depends(verify_access_token),
+    # token_data=Depends(verify_access_token),
 ):
     try:
-        context["username"] = token_data.get("username")
+        # context["username"] = token_data.get("username")
         response = generate_presentation_content(request_data)
         return JSONResponse(
             content={
@@ -85,10 +85,10 @@ async def generate_presentation(
 async def generate_presentation(
     request: Request,
     request_data: PresentationGenerationRequest,
-    token_data=Depends(verify_access_token),
+    # token_data=Depends(verify_access_token),
 ):
     try:
-        context["username"] = token_data.get("username")
+        # context["username"] = token_data.get("username")
         output_file = create_customized_presentation(request_data)
         return JSONResponse(
             content={
@@ -107,7 +107,7 @@ async def generate_presentation(
         )
 
 
-@chatbot_route.post("/download", dependencies=[Depends(verify_access_token)])
+@chatbot_route.post("/download")
 async def download_presentation(request_data: DownloadFileRequest):
     try:
         return download_presentation_service(request_data)
