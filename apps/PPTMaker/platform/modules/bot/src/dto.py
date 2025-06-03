@@ -51,10 +51,6 @@ class PresentationGenerationRequest(BaseModel):
         default_factory=SlideLayoutParams,
         description="Layout customization parameters",
     )
-    style: Optional[StylesEnum] = Field(
-        default=StylesEnum.CORPORATE,
-        description="Style of the presentation",
-    )
     theme: Optional[ThemesEnum] = Field(
         default=None,
         description="Theme of the presentation",
@@ -64,6 +60,7 @@ class PresentationGenerationRequest(BaseModel):
         json_schema_extra = {
             "example": {
                 "content": "custom",
+                "theme": "madison-lilac",
                 "layout_customization": {
                     "slide_range": "3-5",
                     "visual_preference": "balanced",

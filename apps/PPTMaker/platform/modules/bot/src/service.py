@@ -17,7 +17,7 @@ from libs.PPTMaker.platform.modules.bot.src.services.ppt_generator_service impor
 
 
 def create_customized_presentation(request_data: PresentationGenerationRequest):
-    service = PPTGenerator(style=request_data.style, theme=request_data.theme)
+    service = PPTGenerator(theme=request_data.theme)
     layout = service.generate_presentation_layout(
         content=request_data.content, custom_params=request_data.layout_customization
     )

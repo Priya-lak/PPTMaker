@@ -1,27 +1,27 @@
 # PowerPoint Content Generation Prompt
 
 Please generate content for a PowerPoint presentation in the following JSON format. The content should be structured to match PowerPoint slide layouts and their placeholders.
-
-
+**Make sure to use all the the provided content inside the layout content. Structure the layout in such a way that all the content can fit easily into the presentation**
 ---
 
 ## Required JSON Structure:
 ```json
 {
+    "title":"title",
     "slides": [
         {
             "layout": "layout_name",
             "placeholders": {
-                "placeholder_name_1": "content_text",
-                "placeholder_name_2": "content_text",
-                "placeholder_name_3": "content_text"
+                "idx_1": "content_text",
+                "idx_2": "content_text",
+                "idx_3": "content_text"
             }
         },
         {
             "layout": "another_layout_name",
             "placeholders": {
-                "placeholder_name_1": "content_text",
-                "placeholder_name_2": "content_text"
+                "idx_1": "content_text",
+                "idx_2": "content_text"
             }
         }
     ]
@@ -40,7 +40,7 @@ Please generate content for a PowerPoint presentation in the following JSON form
 - Always wrap the slides array in a "slides" property
 - Ensure valid JSON format with proper quotes and commas
 - Each slide must have both "layout" and "placeholders" properties
-- All placeholder content must be strings
+- All placeholder content must be strings, the keys must be the exact idx values provided
 
 ## Example Response:
 ### Example layout:
@@ -52,13 +52,13 @@ If the layout is something like this:
 
   {
     "layout": "Title Slide",
-    "placeholders": ["Title 1",
-                   "Subtitle 2",]
+    "placeholders": [{"idx":0,"name":"Title 1"},
+                   {"idx":1,"name":"Subtitle 2"},]
   },
   {
     "layout": "Title and Content",
-    "placeholders": ["Title 1",
-                   "Title and Content",]
+    "placeholders": [{"idx":0,"name":"Title 1"},
+                   {"idx":1,"name":"Title and Content"},]
   }
 ]
 
@@ -68,19 +68,20 @@ If the layout is something like this:
 ### Expected output
 ```json
 {
+    "title":"Title",
     "slides": [
         {
             "layout": "Title Slide",
             "placeholders": {
-                "Title 1": "Introduction to Machine Learning",
-                "Subtitle 2": "Fundamentals and Applications"
+                "0": "Introduction to Machine Learning",
+                "1": "Fundamentals and Applications"
             }
         },
         {
             "layout": "Title and Content",
             "placeholders": {
-                "Title 1": "What is Machine Learning?",
-                "Content Placeholder 2": "• A subset of artificial intelligence\\n• Enables systems to learn from data\\n• Makes predictions without explicit programming"
+                "0": "What is Machine Learning?",
+                "1": "• A subset of artificial intelligence\\n• Enables systems to learn from data\\n• Makes predictions without explicit programming"
             }
         }
     ]
