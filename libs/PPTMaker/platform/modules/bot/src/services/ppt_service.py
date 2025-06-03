@@ -1,33 +1,20 @@
-import json
-from pprint import pformat, pprint
+from pprint import pformat
 from typing import Dict
 
 from pptx import Presentation
 from pptx.slide import Slide
 
-from libs.PPTMaker.platform.modules.bot.src.constants import LAYOUT_GENERATION_PROMPT
 from libs.PPTMaker.platform.modules.bot.src.models.slide_layout_models_2 import (
     LayoutDefinition,
     PresentationResponse,
 )
-from libs.PPTMaker.platform.modules.bot.src.services.llm_service import LLMService
-from libs.PPTMaker.platform.modules.bot.src.services.ppt_generator_service import (
-    PPTGenerator,
-)
 from libs.utils.common.custom_logger import CustomLogger
 
-log = CustomLogger("TestLogger", is_request=False)
+log = CustomLogger("PPTMaker", is_request=False)
 
 logger, listener = log.get_logger()
+
 listener.start()
-
-
-themes = [
-    "static/templates/madison.pptx",
-    "static/templates/nature.pptx",
-    "static/templates/blue-spheres.pptx",
-    "static/templates/ion-boardroom.pptx",
-]
 
 
 class PPT:
@@ -46,7 +33,6 @@ class PPT:
             )
             layouts.append(layout_blueprint.model_dump())
 
-        logger.info(f"All layouts present in current theme {pformat(layouts)}")
         return layouts
 
     def add_slide(self, layout_identifier):
@@ -63,12 +49,6 @@ class PPT:
             # Use as index
             slide = self.prs.slides.add_slide(self.prs.slide_layouts[layout_identifier])
             return slide
-
-    def add_sample_slides(self):
-        for slide_layout in self.prs.slide_layouts:
-            layout_index = self.prs.slide_layouts.index(slide_layout)
-            slide = self.add_slide(layout_index)
-            self.add_sample_text(slide)
 
     def populate_presentation(self, presentation_content: PresentationResponse):
         """Populate presentation with structured content"""
@@ -90,7 +70,7 @@ class PPT:
                 continue
             except Exception as e:
                 logger.info(f"Unexpected error processing slide: {e}")
-                continue
+                raise
 
     def populate_slide_content(
         self, slide: Slide, placeholder_content: Dict[str, str], sl_layout: str
@@ -162,84 +142,7 @@ class PPT:
             )
         return {"available_layouts": layouts}
 
-    def save_ppt(self, filename="output/demo/testing-layouts.pptx"):
+    def save_ppt(self, filename):
         """Save presentation with optional custom filename"""
         self.prs.save(filename)
         logger.info(f"Presentation saved as: {filename}")
-
-
-llm_service = LLMService()
-
-service = PPT(theme=themes[-1])
-layouts = service.get_theme_layouts()
-messages = [
-    {"role": "system", "content": LAYOUT_GENERATION_PROMPT},
-    {"role": "system", "content": f"Main layout to generate content from: {layouts}"},
-    {"role": "user", "content": "Topic: Machine learning algorithms"},
-]
-response = llm_service.call_llm(messages, {"type": "json_object"})
-
-
-response = PresentationResponse(**json.loads(response))
-
-service.populate_presentation(response)
-# service.add_sample_slides()
-service.save_ppt()
-
-# content = {
-#     "title": "The Magic of Photosynthesis: Unveiling the Power of Plant Life",
-#     "presentation_content": [
-#         {
-#             "layout": "TITLE_AND_CONTENT",
-#             "title": "The Magic of Photosynthesis: Unveiling the Power of Plant Life",
-#             "points": [
-#                 "Photosynthesis is like a magic power that plants use to make their own food from sunlight! It's a vital process that helps plants grow, and in turn, it provides oxygen for us to breathe.",
-#                 "Without photosynthesis, our planet wouldn't be able to support life as we know it.",
-#             ],
-#         },
-#         {
-#             "layout": "TITLE_AND_CONTENT",
-#             "title": "How Photosynthesis Works",
-#             "points": [
-#                 "photosynthesis is a two-step process.",
-#                 "First, plants absorb water and nutrients from the ground through their roots.",
-#                 "Then, they use sunlight, water, and a gas called carbon dioxide to create energy-rich sugars.",
-#                 "This energy is stored in the plant's leaves, stems, and roots, allowing it to grow and thrive.",
-#             ],
-#         },
-#         {
-#             "layout": "TITLE_AND_CONTENT",
-#             "title": "The Importance of Photosynthesis",
-#             "points": [
-#                 "photosynthesis is crucial for our planet's ecosystems.",
-#                 "It provides oxygen for us to breathe, and it serves as the primary source of food for many animals.",
-#                 "Additionally, plants help maintain healthy air and water quality by absorbing pollutants and excess carbon dioxide.",
-#                 "We rely on photosynthesis every day, and it's incredible to think about the power and importance it holds!",
-#             ],
-#         },
-#         {
-#             "layout": "TITLE_AND_CONTENT",
-#             "title": "Real-World Examples of Photosynthesis",
-#             "points": [
-#                 "Did you know that coral reefs, the Amazon rainforest, and even your backyard garden are all powered by photosynthesis?",
-#                 "It's a reminder that photosynthesis is all around us, supporting life in every corner of our planet.",
-#             ],
-#         },
-#         {"layout": "TITLE_ONLY", "title": "Conclusion"},
-#         {
-#             "layout": "TITLE_AND_CONTENT",
-#             "title": "Conclusion",
-#             "points": [
-#                 "Understanding photosynthesis is crucial for appreciating the magic of plant life.",
-#                 "By recognizing the importance of this process, we can begin to respect and care for the incredible plants that surround us.",
-#                 "Join us as we continue to explore the wonders of photosynthesis and discover the incredible ways it impacts our world.",
-#             ],
-#         },
-#     ],
-# }
-
-
-# layout = PresentationModel(**content)
-
-# service = PPTGenerator(style=StylesEnum.CLASSY, theme=ThemesEnum.BLUE_SPHERES)
-# service.create_presentation_from_layout(layout=layout)
