@@ -77,9 +77,8 @@ Maximize visual interest by utilizing varied positioning patterns:
 ## Layout Input Format
 
 Layout is as such:
-```json
 {slide_layouts}
-```
+
 ## Main content
 Adhere to the content provided here:
 {content}

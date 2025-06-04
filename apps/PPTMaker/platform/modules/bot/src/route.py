@@ -1,6 +1,16 @@
+import os
 import traceback
+import urllib
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Request
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+)
 from fastapi.responses import JSONResponse
 from starlette_context import context
 
@@ -105,6 +115,46 @@ async def generate_presentation(
         return JSONResponse(
             content={"success": False, "error": str(error)}, status_code=500
         )
+
+
+# Updated backend route for serving PPT file as response body
+@chatbot_route.get(
+    "/preview/{filepath:path}", dependencies=[Depends(verify_access_token)]
+)
+async def preview_presentation(filepath: str):
+    try:
+        # Verify token if needed
+        # verify_token(token)  # Implement your token verification logic
+
+        # Decode the filepath
+        decoded_filepath = urllib.parse.unquote(filepath)
+
+        # Ensure the file exists
+        if not os.path.exists(decoded_filepath):
+            raise HTTPException(status_code=404, detail="File not found")
+
+        # Read the file content
+        with open(decoded_filepath, "rb") as file:
+            file_content = file.read()
+
+        # Return the file content with appropriate headers for embedding
+        return Response(
+            content=file_content,
+            media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            headers={
+                "Content-Disposition": "inline",  # Changed from 'attachment' to 'inline'
+                "Content-Length": str(len(file_content)),
+                "Accept-Ranges": "bytes",
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
+        )
+    except Exception as e:
+        logger.error(
+            f"An error occurred while serving file for preview: {traceback.format_exc()}"
+        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @chatbot_route.post("/download")
