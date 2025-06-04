@@ -1,22 +1,60 @@
 # PowerPoint Content Generation Prompt
 
-Please generate content for a PowerPoint presentation in the following JSON format. The content should be structured to match PowerPoint slide layouts and their placeholders.
+Generate structured content for PowerPoint presentations using the specified layouts and placeholders. Content should be professionally formatted and comprehensively utilize all provided source material.
 
-**CRITICAL REQUIREMENTS**:
+## Core Requirements
 
-- You must use virtually ALL the provided content within the presentation slides. Structure the layout distribution strategically to ensure comprehensive coverage of the source material without leaving significant portions unused.
-- For each layout, ONLY use the placeholders and the idxs provided. Do not use additional placeholder ids for the layouts.[ e.g. if a particular layout has only 3 placeholder *DO NOT add more than 3 placeholders.*. Use the exact idx and placeholder provided].
-- use only the layouts and their respective placeholders provided.
-- DO NOT make up layout names or placeholders OR ELSE I WILL KIDNAP YOUR FAMILY
+### Layout Compliance
+- **MANDATORY**: Use ONLY the provided layouts and their exact placeholders
+                or I WILL KIDNAP YOUR FAMILY
+- **MANDATORY**: Use exact `idx` values and placeholder names as specified
+- **FORBIDDEN**: Creating additional placeholders or modifying layout structure
 
-## Layout structure:
-{slide_layouts}
----
+### Content Coverage
+- Utilize virtually ALL provided source material within the presentation
+- Distribute content strategically across slides to ensure comprehensive coverage
+- No significant portions of source material should remain unused
 
-## Required JSON Structure:
+## Content Guidelines by Placeholder Type
+
+### Titles (Title, Vertical Title)
+- **Length**: 5-10 words maximum
+- **Style**: Concise, descriptive, actionable
+- **Format**: Clear headers that summarize section content
+
+### Content (Content, Vertical Text)
+- **Length**: Under 150 words per placeholder
+- **Format**: Bullet points for lists, short paragraphs for descriptions
+- **Style**: Start bullet points with action verbs or key concepts
+- **Tone**: Professional and engaging
+
+### Subtitles/Captions (Subtitle, Text)
+- **Purpose**: Supporting context or explanatory information
+- **Length**: 1-2 sentences for captions, longer for descriptive text
+- **Style**: Complement main content without redundancy
+
+## Layout Diversity Strategy
+
+Maximize visual interest by utilizing varied positioning patterns:
+
+**Spatial Arrangements**:
+- Vertical flows (top-to-bottom)
+- Horizontal layouts (side-by-side)
+- Multi-column distributions
+- Corner/quadrant positioning
+- Center-focused with surrounding elements
+- Asymmetrical distributions
+
+**Content Emphasis**:
+- Header-heavy (prominent titles)
+- Content-rich (multiple content blocks)
+- Balanced title-to-content ratios
+
+## Required JSON Structure
+
 ```json
 {
-    "title":"presentation_title",
+    "title": "presentation_title",
     "slides": [
         {
             "layout": "layout_name",
@@ -25,49 +63,52 @@ Please generate content for a PowerPoint presentation in the following JSON form
                 "idx_2": "content_text",
                 "idx_3": "content_text"
             }
-        },
-        {
-            "layout": "another_layout_name",
-            "placeholders": {
-                "idx_1": "content_text",
-                "idx_2": "content_text"
-            }
         }
     ]
 }
 ```
 
-## Content Guidelines:
+### JSON Requirements
+- Valid format with proper quotes and commas
+- Each slide must include both "layout" and "placeholders" properties
+- All placeholder content must be strings
+- Keys must be exact `idx` values from layout specifications
 
-1. **Titles**: Keep concise and descriptive (5-10 words)
-2. **Content**: Use bullet points for lists, short paragraphs for descriptions
-3. **Bullet Points**: Start with action verbs or key concepts
-4. **Length**: Keep individual content blocks under 150 words
-5. **Tone**: Professional and engaging
-6. **Content Coverage**: Ensure comprehensive utilization of provided material
-7. **Avoid Comparisons**: Do not create comparison slides or side-by-side evaluations
+## Layout Input Format
 
-## Layout Diversity Requirements:
+Layout is as such:
+```json
+{slide_layouts}
+```
+## Main content
+Adhere to the content provided here:
+{content}
 
-Utilize a wide variety of slide layouts to create visual interest and accommodate different content types. Distribute content across diverse positioning patterns including:
+## Content Formatting Guidelines
 
-- **Vertical layouts**: Top-to-bottom content flow
-- **Horizontal layouts**: Side-by-side content arrangement
-- **Multi-column layouts**: Three or more content sections
-- **Corner positioning**: Content in specific quadrants
-- **Center-focused layouts**: Central content with surrounding elements
-- **Asymmetrical layouts**: Uneven content distribution
-- **Header-heavy layouts**: Prominent titles with supporting content below
-- **Content-rich layouts**: Multiple content blocks with minimal titles
+- **Lists**: Use bullet points with `•` symbol
+- **Line breaks**: Use `\\n` for multi-line content
+- **Emphasis**: Keep formatting simple and readable
+- **Consistency**: Maintain uniform style across all slides
 
-## Important Notes:
-- Always wrap the slides array in a "slides" property
-- Ensure valid JSON format with proper quotes and commas
-- Each slide must have both "layout" and "placeholders" properties
-- All placeholder content must be strings, the keys must be the exact idx values provided
-- Maximize content utilization from source material
-- Vary slide layouts' positioning significantly throughout the presentation
+## Prohibited Content Types
 
+- Comparison slides or side-by-side evaluations
+- Made-up layout names or placeholder modifications
+- Content that significantly deviates from source material
+- Overly lengthy individual content blocks
+
+## Quality Standards
+
+1. **Comprehensiveness**: All source material strategically incorporated
+2. **Clarity**: Each placeholder serves a distinct purpose
+3. **Professional tone**: Business-appropriate language and structure
+4. **Visual variety**: Diverse layout utilization throughout presentation
+5. **Logical flow**: Content progression that supports overall narrative
+
+---
+
+**Process**: Analyze provided source material → Select appropriate layout variety → Distribute content strategically → Format according to placeholder types → Validate JSON structure
 ## Example Responses:
 
 ### Example Layout Set 1:

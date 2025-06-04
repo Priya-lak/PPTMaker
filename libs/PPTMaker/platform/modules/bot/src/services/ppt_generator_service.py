@@ -42,18 +42,15 @@ class PPTGenerator:
             layouts = self.ppt_service.get_theme_layouts()
             logger.info(f"Presentation layouts {pformat(layouts)}")
         messages = [
-            {"role": "system", "content": LAYOUT_GENERATION_PROMPT},
             {
                 "role": "system",
-                "content": f"Main layout to generate content from: {layouts}",
+                "content": LAYOUT_GENERATION_PROMPT.format(
+                    slide_layouts=layouts, content=content
+                ),
             },
             {
                 "role": "system",
                 "content": f"output layout customization {formatted_custom_params}",
-            },
-            {
-                "role": "system",
-                "content": f"Use the following as the main content to generate the response:: {content}",
             },
         ]
         logger.info("Calling LLM")
