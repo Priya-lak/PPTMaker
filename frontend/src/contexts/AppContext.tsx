@@ -15,7 +15,7 @@ export interface ContentCustomization {
 export interface LayoutCustomization {
   slide_range: "3-5"|"6-9"|"10-15"|"16+";
   visual_preference: 'minimal' | 'visual_heavy' | 'balanced';
-  theme: 'madison-lilac' | 'madison' | 'ion' ;
+  theme: string;
 }
 
 export interface AppState {

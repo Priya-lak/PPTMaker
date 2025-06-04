@@ -4,11 +4,20 @@ import { useApp } from '../contexts/AppContext';
 import { apiService } from '../services/api';
 
 const themes = [
+  { id: 'madison', name: 'Madison', color: 'bg-gradient-to-r from-indigo-400 to-blue-500' },
   { id: 'madison-lilac', name: 'Madison Lilac', color: 'bg-gradient-to-r from-purple-400 to-pink-400' },
-  { id: 'classic-blue', name: 'Classic Blue', color: 'bg-gradient-to-r from-blue-500 to-blue-700' },
-  { id: 'modern-dark', name: 'Modern Dark', color: 'bg-gradient-to-r from-gray-700 to-gray-900' },
-  { id: 'sunset-orange', name: 'Sunset Orange', color: 'bg-gradient-to-r from-orange-400 to-red-500' },
-  { id: 'forest-green', name: 'Forest Green', color: 'bg-gradient-to-r from-green-500 to-green-700' }
+  { id: 'blue-spheres', name: 'Blue Spheres', color: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
+  { id: 'ion-boardroom', name: 'Ion Boardroom', color: 'bg-gradient-to-r from-gray-700 to-gray-900' },
+  { id: 'bohemian', name: 'Bohemian', color: 'bg-gradient-to-r from-pink-300 to-red-400' },
+  { id: 'canva-portfolio', name: 'Canva Portfolio', color: 'bg-gradient-to-r from-blue-300 to-purple-500' },
+  { id: 'designer-template', name: 'Designer Template', color: 'bg-gradient-to-r from-yellow-300 to-orange-400' },
+  { id: 'dividend-navy', name: 'Dividend Navy', color: 'bg-gradient-to-r from-blue-800 to-gray-900' },
+  { id: 'gradient-pink', name: 'Gradient Pink', color: 'bg-gradient-to-r from-pink-400 to-fuchsia-600' },
+  { id: 'holographic', name: 'Holographic', color: 'bg-gradient-to-r from-purple-200 via-pink-200 to-blue-200' },
+  { id: 'mesh-black', name: 'Mesh Black', color: 'bg-gradient-to-r from-gray-800 to-black' },
+  { id: 'nature', name: 'Nature', color: 'bg-gradient-to-r from-green-400 to-lime-500' },
+  { id: 'sales-blue', name: 'Sales Blue', color: 'bg-gradient-to-r from-blue-600 to-indigo-700' },
+  { id: 'slide-blue', name: 'Slide Blue', color: 'bg-gradient-to-r from-sky-400 to-blue-600' }
 ];
 
 const PPTSettings: React.FC = () => {
@@ -94,13 +103,13 @@ const PPTSettings: React.FC = () => {
               </label>
               <select
                 value={state.layoutCustomization.slide_range}
-                onChange={(e) => updateLayoutCustomization({slide_range: e.target.value })}
+                onChange={(e) => updateLayoutCustomization({slide_range: e.target.value as any})}
                 className="w-full px-3 py-2 bg-purple-900/50 border border-purple-600/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                <option value="5-8">5-8 slides</option>
+                <option value="3-5">3-5 slides</option>
+                <option value="6-9">6-9 slides</option>
                 <option value="10-15">10-15 slides</option>
-                <option value="15-20">15-20 slides</option>
-                <option value="20+">20+ slides</option>
+                <option value="16+">16+ slides</option>
               </select>
             </div>
 

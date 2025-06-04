@@ -40,11 +40,16 @@ class PPTGenerator:
             formatted_custom_params = params_to_prompt_string(custom_params)
             logger.info(f"custom params {formatted_custom_params}")
             layouts = self.ppt_service.get_theme_layouts()
+            logger.info(f"Presentation layouts {pformat(layouts)}")
         messages = [
             {"role": "system", "content": LAYOUT_GENERATION_PROMPT},
             {
                 "role": "system",
                 "content": f"Main layout to generate content from: {layouts}",
+            },
+            {
+                "role": "system",
+                "content": f"output layout customization {formatted_custom_params}",
             },
             {
                 "role": "system",

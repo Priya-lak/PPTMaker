@@ -23,13 +23,24 @@ class PPT:
 
     def get_theme_layouts(self):
         layouts = []
+        excluded_placeholders = ["date", "footer", "slide number"]
+
         for slide_layout in self.prs.slide_layouts:
+            placeholders = [
+                {"idx": idx, "name": placeholder.name}
+                for idx, placeholder in enumerate(slide_layout.placeholders)
+                if not any(
+                    keyword in (placeholder.name or "").lower()
+                    for keyword in excluded_placeholders
+                )
+            ]
+            logger.info(
+                f"layout {slide_layout.name} placeholders {pformat(placeholders)}"
+            )
+
             layout_blueprint = LayoutDefinition(
                 layout=slide_layout.name,
-                placeholders=[
-                    {"idx": idx, "name": placeholder.name}
-                    for idx, placeholder in enumerate(slide_layout.placeholders)
-                ],
+                placeholders=placeholders,
             )
             layouts.append(layout_blueprint.model_dump())
 

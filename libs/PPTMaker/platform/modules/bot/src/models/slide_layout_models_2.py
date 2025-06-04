@@ -25,9 +25,7 @@ class PresentationResponse(BaseModel):
 # Model for layout definition (for input validation)
 class LayoutDefinition(BaseModel):
     layout: str = Field(..., min_length=1, description="Layout name")
-    placeholders: List[Dict] = Field(
-        ..., min_items=1, description="List of placeholder names"
-    )
+    placeholders: List[Dict] = Field(..., description="List of placeholder names")
 
     @field_validator("layout")
     def name_not_empty(cls, v):
