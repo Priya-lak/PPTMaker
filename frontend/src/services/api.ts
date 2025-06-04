@@ -20,6 +20,19 @@ export interface ApiResponse<T> {
 }
 
 class ApiService {
+  private getAuthHeaders(): Record<string, string> {
+    const token = localStorage.getItem('access_token');
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+  }
+
   private async makeRequest<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -27,14 +40,18 @@ class ApiService {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDg5NTU2OTMsInVzZXJuYW1lIjoidXNlciJ9.k7tBBhLBcwjO_mSzk4Fmq6zcGZHRgZpd_CnySF8ZrNU',
+          ...this.getAuthHeaders(),
           ...options.headers,
         },
         ...options,
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid, redirect to login
+          localStorage.removeItem('access_token');
+          window.location.reload();
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -64,13 +81,15 @@ class ApiService {
     try {
       const response = await fetch(`${API_BASE_URL}/chatbot/download`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({ filepath }),
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('access_token');
+          window.location.reload();
+        }
         throw new Error(`Download failed! status: ${response.status}`);
       }
 
