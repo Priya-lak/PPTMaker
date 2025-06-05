@@ -52,7 +52,6 @@ venv/
 .env
 logs/
 .vscode/
-static/
 output/
 temp/
 .coverage
