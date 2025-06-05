@@ -1,76 +1,59 @@
 import React, { useState, useEffect } from 'react';
+import { useApp } from '../contexts/AppContext';
+import { apiService } from '../services/api';
 
 const DownloadPage: React.FC = () => {
-  // Mock state for demonstration
-  const [state, setState] = useState({
-    outputFile: 'sample_presentation.pptx',
-    topic: 'Machine Learning Fundamentals',
-    layoutCustomization: {
-      theme: 'modern-dark',
-      slide_range: '8-10',
-      visual_preference: 'professional_clean'
-    },
-    isLoading: false,
-    error: null
-  });
-
+  const { state, setLoading, setError, resetState } = useApp();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [previewType, setPreviewType] = useState<'pdf' | 'images' | 'office'>('pdf');
-  const [slideImages, setSlideImages] = useState<any[]>([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const setLoading = (loading: boolean) => {
-    setState(prev => ({ ...prev, isLoading: loading }));
-  };
-
-  const setError = (error: string | null) => {
-    setState(prev => ({ ...prev, error }));
-  };
-
-  const resetState = () => {
-    setState({
-      outputFile: '',
-      topic: '',
-      layoutCustomization: {
-        theme: '',
-        slide_range: '',
-        visual_preference: ''
-      },
-      isLoading: false,
-      error: null
-    });
-  };
+  const [previewLoading, setPreviewLoading] = useState(true);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewMethod, setPreviewMethod] = useState<'google' | 'blob' | 'direct'>('google');
 
   useEffect(() => {
-    if (state.outputFile) {
-      const baseUrl = 'http://0.0.0.0:9898/chatbot'; // You can make this configurable
-      const token = localStorage.getItem('access_token');
+    const loadPreview = async () => {
+      if (state.outputFile) {
+        setPreviewLoading(true);
+        setPreviewError(null);
 
-      // Use your existing preview route for all preview types
-      setPreviewUrl(`${baseUrl}/preview/${encodeURIComponent(state.outputFile)}?token=${token}`);
-    }
-  }, [state.outputFile, previewType]);
+        try {
+          if (previewMethod === 'google') {
+            // Try Google Docs viewer first
+            const googleUrl = apiService.getGoogleDocsPreviewUrl(state.outputFile);
+            setPreviewUrl(googleUrl);
+          } else if (previewMethod === 'blob') {
+            // Fallback to blob method
+            const blobUrl = await apiService.getPreviewBlob(state.outputFile);
+            setPreviewUrl(blobUrl);
+          } else {
+            // Direct URL method
+            const directUrl = apiService.getPreviewUrl(state.outputFile);
+            setPreviewUrl(directUrl);
+          }
+        } catch (error) {
+          console.error('Failed to load preview:', error);
+          setPreviewError('Preview not available');
+        } finally {
+          setPreviewLoading(false);
+        }
+      }
+    };
+
+    loadPreview();
+
+    // Cleanup blob URL when component unmounts or outputFile changes
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [state.outputFile, previewMethod]);
 
   const handleDownload = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const baseUrl = 'http://0.0.0.0:9898'; // You can make this configurable
-      const response = await fetch(`${baseUrl}/download`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}` // If you need auth
-        },
-        body: JSON.stringify({ filepath: state.outputFile })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to download file');
-      }
-
-      const blob = await response.blob();
+      const blob = await apiService.downloadFile(state.outputFile);
 
       // Create download link
       const url = window.URL.createObjectURL(blob);
@@ -94,15 +77,76 @@ const DownloadPage: React.FC = () => {
     resetState();
   };
 
+  const handlePreviewMethodChange = (method: 'google' | 'blob' | 'direct') => {
+    setPreviewMethod(method);
+  };
+
   const renderPreview = () => {
+    if (previewLoading) {
+      return (
+        <div className="flex items-center justify-center h-[600px] text-gray-400">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p>Loading presentation preview...</p>
+            <p className="text-sm mt-2">Using {previewMethod === 'google' ? 'Google Docs Viewer' : previewMethod === 'blob' ? 'Blob Method' : 'Direct Method'}</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (previewError) {
+      return (
+        <div className="flex items-center justify-center h-[600px] text-gray-400">
+          <div className="text-center">
+            <div className="text-4xl mb-4">⚠️</div>
+            <p className="text-red-300 mb-2">{previewError}</p>
+            <p className="text-sm mb-4">Try a different preview method:</p>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={() => handlePreviewMethodChange('google')}
+                className={`px-3 py-1 text-xs rounded ${previewMethod === 'google' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Google Viewer
+              </button>
+              <button
+                onClick={() => handlePreviewMethodChange('blob')}
+                className={`px-3 py-1 text-xs rounded ${previewMethod === 'blob' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Blob Method
+              </button>
+              <button
+                onClick={() => handlePreviewMethodChange('direct')}
+                className={`px-3 py-1 text-xs rounded ${previewMethod === 'direct' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              >
+                Direct
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (previewUrl) {
       return (
-        <iframe
-          src={previewUrl}
-          className="w-full h-[600px] border-0"
-          title="PowerPoint Preview"
-          sandbox="allow-same-origin allow-scripts"
-        />
+        <div className="relative">
+          <iframe
+            src={previewUrl}
+            className="w-full h-[600px] border-0 rounded-lg"
+            title="PowerPoint Preview"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            onError={() => {
+              setPreviewError('Failed to load preview iframe');
+            }}
+            onLoad={() => {
+              console.log('Preview loaded successfully');
+            }}
+          />
+          {previewMethod === 'google' && (
+            <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+              Google Docs Viewer
+            </div>
+          )}
+        </div>
       );
     }
 
@@ -110,11 +154,30 @@ const DownloadPage: React.FC = () => {
       <div className="flex items-center justify-center h-[600px] text-gray-400">
         <div className="text-center">
           <div className="text-4xl mb-4">📋</div>
-          <p>Loading presentation preview...</p>
+          <p>Preview not available</p>
+          <p className="text-sm mt-2">You can still download your presentation</p>
         </div>
       </div>
     );
   };
+
+  if (!state.outputFile) {
+    return (
+      <div className="max-w-2xl mx-auto text-center">
+        <div className="card-dark rounded-xl p-8">
+          <div className="text-4xl mb-4">❌</div>
+          <h2 className="text-2xl font-bold text-white mb-2">No Presentation Found</h2>
+          <p className="text-gray-400 mb-6">Please create a presentation first.</p>
+          <button
+            onClick={handleCreateNew}
+            className="button-primary px-6 py-3 rounded-lg"
+          >
+            🆕 Create New Presentation
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -136,8 +199,19 @@ const DownloadPage: React.FC = () => {
               <h3 className="text-xl font-semibold text-white flex items-center">
                 📊 PowerPoint Preview
               </h3>
-              <div className="text-sm text-gray-400">
-                Using your existing preview route
+              <div className="flex items-center gap-2">
+                <select
+                  value={previewMethod}
+                  onChange={(e) => handlePreviewMethodChange(e.target.value as 'google' | 'blob' | 'direct')}
+                  className="text-xs bg-gray-700 text-white px-2 py-1 rounded border border-gray-600"
+                >
+                  <option value="google">Google Docs Viewer</option>
+                  <option value="blob">Blob Method</option>
+                  <option value="direct">Direct Method</option>
+                </select>
+                <div className="text-sm text-gray-400">
+                  Preview Method
+                </div>
               </div>
             </div>
             <div className="bg-slate-800 rounded-lg overflow-hidden">
@@ -153,9 +227,9 @@ const DownloadPage: React.FC = () => {
               <h3 className="text-lg font-semibold text-white mb-3">Presentation Details</h3>
               <div className="space-y-2 text-gray-400 text-sm">
                 <p><span className="font-medium text-gray-300">Topic:</span> {state.topic}</p>
-                <p><span className="font-medium text-gray-300">Theme:</span> {state.layoutCustomization.theme.replace('-', ' ')}</p>
+                <p><span className="font-medium text-gray-300">Theme:</span> {state.layoutCustomization.theme.replace(/[-_]/g, ' ')}</p>
                 <p><span className="font-medium text-gray-300">Slides:</span> {state.layoutCustomization.slide_range}</p>
-                <p><span className="font-medium text-gray-300">Style:</span> {state.layoutCustomization.visual_preference.replace('_', ' ')}</p>
+                <p><span className="font-medium text-gray-300">Style:</span> {state.layoutCustomization.visual_preference.replace(/[-_]/g, ' ')}</p>
                 {state.outputFile && (
                   <p><span className="font-medium text-gray-300">File:</span> {state.outputFile.split('/').pop()}</p>
                 )}
@@ -202,6 +276,7 @@ const DownloadPage: React.FC = () => {
 
             <div className="mt-6 text-gray-500 text-xs text-center">
               <p>Your presentation will be downloaded as a .pptx file</p>
+              <p className="mt-1">Thank you for using AI PPT Maker!</p>
             </div>
           </div>
         </div>

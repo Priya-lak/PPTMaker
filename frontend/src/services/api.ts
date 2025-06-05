@@ -99,6 +99,82 @@ class ApiService {
       throw error;
     }
   }
+
+  getPreviewUrl(filepath: string): string {
+    try {
+      const token = localStorage.getItem('access_token');
+      const encodedFilepath = encodeURIComponent(filepath);
+
+      // Construct the preview URL - no validation needed, just return the URL
+      const previewUrl = `${API_BASE_URL}/chatbot/preview/${encodedFilepath}${token ? `?token=${token}` : ''}`;
+
+      return previewUrl;
+    } catch (error) {
+      console.error('Preview URL generation failed:', error);
+      throw error;
+    }
+  }
+
+  async validatePreview(filepath: string): Promise<boolean> {
+    try {
+      const previewUrl = this.getPreviewUrl(filepath);
+
+      // Make a simple GET request to check if the file exists
+      // We'll catch the response but not process the content
+      const response = await fetch(previewUrl, {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.warn('Preview validation failed:', error);
+      return false;
+    }
+  }
+  getGoogleDocsPreviewUrl(filepath: string): string {
+    try {
+      // Get the direct URL to the file
+      const directUrl = this.getPreviewUrl(filepath);
+
+      // Construct Google Docs viewer URL
+      const googleDocsUrl = `https://docs.google.com/gview?url=http://0.0.0.0:9898/chatbot/preview/temp/Deep-Learning-Basics.pptx&embedded=true`;
+
+      return googleDocsUrl;
+    } catch (error) {
+      console.error('Google Docs preview URL generation failed:', error);
+      throw error;
+    }
+  }
+
+  async getPreviewBlob(filepath: string): Promise<string> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/chatbot/download`, {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ filepath }),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('access_token');
+          window.location.reload();
+        }
+        throw new Error(`Preview blob failed! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      // Create a blob URL for the file
+      const blobUrl = URL.createObjectURL(blob);
+
+      return blobUrl;
+    } catch (error) {
+      console.error('Preview blob generation failed:', error);
+      throw error;
+    }
+  }
+
 }
 
 export const apiService = new ApiService();

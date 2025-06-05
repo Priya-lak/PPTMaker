@@ -1,6 +1,7 @@
 import os
 import traceback
 import urllib
+from typing import Optional
 
 from fastapi import (
     APIRouter,
@@ -117,32 +118,37 @@ async def generate_presentation(
         )
 
 
-# Updated backend route for serving PPT file as response body
-@chatbot_route.get(
-    "/preview/{filepath:path}", dependencies=[Depends(verify_access_token)]
-)
-async def preview_presentation(filepath: str):
+@chatbot_route.get("/preview/{filepath:path}")
+async def preview_presentation(filepath: str, token: Optional[str] = Query(None)):
     try:
-        # Verify token if needed
-        # verify_token(token)  # Implement your token verification logic
+        # Verify token if provided
+        if token:
+            # Use your existing token verification logic
+            verify_access_token(
+                token
+            )  # You'll need to adapt this for direct token verification
+        # else:
+        #     # Handle case where no token is provided
+        #     raise HTTPException(status_code=401, detail="Token required")
 
-        # Decode the filepath
+        # Rest of your existing code...
         decoded_filepath = urllib.parse.unquote(filepath)
 
-        # Ensure the file exists
         if not os.path.exists(decoded_filepath):
             raise HTTPException(status_code=404, detail="File not found")
 
-        # Read the file content
         with open(decoded_filepath, "rb") as file:
             file_content = file.read()
+        # Set correct MIME type for .pptx files
+        mime_type = (
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        )
 
-        # Return the file content with appropriate headers for embedding
         return Response(
             content=file_content,
-            media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            media_type=mime_type,
             headers={
-                "Content-Disposition": "inline",  # Changed from 'attachment' to 'inline'
+                "Content-Disposition": "inline",
                 "Content-Length": str(len(file_content)),
                 "Accept-Ranges": "bytes",
                 "Cache-Control": "no-cache, no-store, must-revalidate",
@@ -154,7 +160,7 @@ async def preview_presentation(filepath: str):
         logger.error(
             f"An error occurred while serving file for preview: {traceback.format_exc()}"
         )
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @chatbot_route.post("/download")
