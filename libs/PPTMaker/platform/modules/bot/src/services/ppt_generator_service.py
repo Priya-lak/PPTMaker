@@ -1,5 +1,6 @@
 import json
 import traceback
+from pathlib import Path
 from pprint import pformat
 
 from libs.PPTMaker.enums.themes_styles_enum import ThemesEnum
@@ -69,13 +70,20 @@ class PPTGenerator:
     def _save_presentation(self, title):
         try:
             logger.info("Saving presentation to file")
-            output_file = f"temp/{title}.pptx".replace(" ", "-")
-            self.ppt_service.save_ppt(filename=output_file)
+            temp_dir = Path("temp")
+
+            temp_dir.mkdir(parents=True, exist_ok=True)
+            sanitized_title = title.replace(" ", "-")
+
+            output_file = temp_dir / f"{sanitized_title}.pptx"
+
+            self.ppt_service.save_ppt(filename=str(output_file))
             logger.info(f"Presentation saved to {output_file}")
-            return output_file
+            return str(output_file)
+
         except Exception as e:
-            logger.error(f"An error occurred while saving presentation {str(e)}")
-            raise e
+            logger.error(f"An error occurred while saving presentation: {str(e)}")
+            raise
 
     def create_presentation_from_layout(self, layout: PresentationResponse) -> str:
         logger.info("Creating presentation from content")
