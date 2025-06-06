@@ -11,3 +11,7 @@ cachetools==5.5.2
 passlib==1.7.4
 python-multipart==0.0.20
 python-pptx==1.0.2
+uvicorn==0.34.3
+python-dotenv==1.1.0
+starlette-context==0.4.0
+requests==2.32.3
