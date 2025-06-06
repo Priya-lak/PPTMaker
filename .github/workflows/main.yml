@@ -1,0 +1,30 @@
+name: Smart Frontend & Backend Deployment
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Check if frontend changed
+        id: changes
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^frontend/'; then
+            echo "frontend_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "frontend_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy Backend
+        run: curl -X POST ${{ secrets.VERCEL_BACKEND_HOOK }}
+
+      - name: Deploy Frontend (only if changed)
+        if: steps.changes.outputs.frontend_changed == 'true'
+        run: curl -X POST ${{ secrets.VERCEL_FRONTEND_HOOK }}
