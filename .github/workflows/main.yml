@@ -23,7 +23,7 @@ jobs:
           fi
 
       - name: Deploy Backend
-        run: curl -X POST ${{ secrets.VERCEL_BACKEND_HOOK }}
+        run: curl -X POST ${{ secrets.RENDER_BACKEND_HOOK }}
 
       - name: Deploy Frontend (only if changed)
         if: steps.changes.outputs.frontend_changed == 'true'
