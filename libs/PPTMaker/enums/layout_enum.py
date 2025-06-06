@@ -1,0 +1,13 @@
+from enum import IntEnum
+
+
+class SlideLayout(IntEnum):
+    TITLE = 0
+    TITLE_AND_CONTENT = 1
+    SECTION_HEADER = 2
+    TWO_CONTENT = 3
+    COMPARISON = 4
+    TITLE_ONLY = 5
+    BLANK = 6
+    CONTENT_WITH_CAPTION = 7
+    PICTURE_WITH_CAPTION = 8
