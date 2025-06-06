@@ -1,0 +1,9 @@
+node_modules
+*.pyc
+*.log*
+output/
+temp/
+venv/
+creds.json
+settings.json
+.env
